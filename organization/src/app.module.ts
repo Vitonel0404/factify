@@ -7,6 +7,7 @@ import { DataSourceConfig } from './config/data.source';
 import { CompanyModule } from './company/company.module';
 import { BranchModule } from './branch/branch.module';
 import { PlanModule } from './plan/plan.module';
+import { CompanyPlanModule } from './company_plan/company_plan.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { PlanModule } from './plan/plan.module';
     CompanyModule,
     BranchModule,
     PlanModule,
+    CompanyPlanModule,
   ],
   controllers: [AppController],
   providers: [AppService],

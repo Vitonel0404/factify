@@ -17,9 +17,12 @@ export const DataSourceConfig : DataSourceOptions = {
     database: configService.get<string>("DB_DATABASE"),
     entities: [
         join(__dirname, '../company/entities/**/*.{ts,js}'),
-        join(__dirname, '../branch/entities/**/*.{ts,js}')
+        join(__dirname, '../branch/entities/**/*.{ts,js}'),
+        join(__dirname, '../plan/entities/**/*.{ts,js}'),
+        join(__dirname, '../company_plan/entities/**/*.{ts,js}')
+
     ],
-    migrations: [__dirname+"../../../db/migrations/*{.ts,.js}"],
+    migrations: [__dirname+"../../../db/migrations/*init{.ts,.js}"],
     synchronize: false,
     // logging: true
 }

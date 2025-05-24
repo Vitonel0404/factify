@@ -20,9 +20,9 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "typeorm": "typeorm-ts-node-commonjs -d ./src/config/data.source.ts",
     "typeorm-tenat": "typeorm-ts-node-commonjs -d ./src/config/tenant-data.source.ts",
-    "typeorm:generate-migrations": "set NODE_ENV=develop&& npm run typeorm migration:generate -- ./db/migrations/%npm_config_name%",
+    "typeorm:generate-migrations": "set NODE_ENV=develop&& npm run typeorm migration:generate -- ./db/migrations/init",
     "typeorm:run-migrations": "set NODE_ENV=develop&& npm run typeorm migration:run",
-    "typeorm:generate-migrations-tenant": "set NODE_ENV=develop&& npm run typeorm-tenat migration:generate -- ./db/migrations/%npm_config_name%"
+    "typeorm:generate-migrations-tenant": "set NODE_ENV=develop&& npm run typeorm-tenat migration:generate -- ./db/migrations/migrations-tenant"
 
   },
   "dependencies": {

@@ -18,7 +18,7 @@ export const DataSourceConfig : DataSourceOptions = {
     entities: [
         join(__dirname, '../entities/**/*.entity.{ts,js}')
     ],
-    migrations: [__dirname+"../../../db/migrations/*{.ts,.js}"],
+    //migrations: [__dirname+"../../../db/migrations/*{.ts,.js}"],
     synchronize: false,
     // logging: true
 }
