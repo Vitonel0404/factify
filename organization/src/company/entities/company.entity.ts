@@ -29,6 +29,9 @@ export class Company {
   @Column({ type: 'varchar', length: 100 })
   db_name: string;
 
+  @Column({ type: 'boolean', default: false })
+  is_delinquent: boolean;
+
   @Column({ type: 'boolean', default: true })
   is_active: boolean;
 

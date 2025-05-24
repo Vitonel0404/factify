@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSourceConfig } from './config/data.source';
 import { CompanyModule } from './company/company.module';
 import { BranchModule } from './branch/branch.module';
+import { PlanModule } from './plan/plan.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { BranchModule } from './branch/branch.module';
     TypeOrmModule.forRoot({...DataSourceConfig}),
     CompanyModule,
     BranchModule,
+    PlanModule,
   ],
   controllers: [AppController],
   providers: [AppService],
