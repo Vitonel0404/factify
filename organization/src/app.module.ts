@@ -3,7 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { DataSourceConfig } from './config/data.source';
+import { DataSourceConfig } from './common/config/data.source';
 import { CompanyModule } from './company/company.module';
 import { BranchModule } from './branch/branch.module';
 import { PlanModule } from './plan/plan.module';

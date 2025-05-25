@@ -7,6 +7,7 @@ ConfigModule.forRoot({
 })
 
 const configService = new ConfigService()
+console.log(__dirname);
 
 export const DataSourceConfig : DataSourceOptions = {
     type:'postgres',
@@ -16,9 +17,13 @@ export const DataSourceConfig : DataSourceOptions = {
     password: configService.get<string>("DB_PASSWORD"),
     database: configService.get<string>("DB_DATABASE"),
     entities: [
-        join(__dirname, '../entities/**/*.entity.{ts,js}')
+        join(__dirname, '../../company/entities/**/*.{ts,js}'),
+        join(__dirname, '../../branch/entities/**/*.{ts,js}'),
+        join(__dirname, '../../plan/entities/**/*.{ts,js}'),
+        join(__dirname, '../../company_plan/entities/**/*.{ts,js}')
+
     ],
-    //migrations: [__dirname+"../../../db/migrations/*{.ts,.js}"],
+    migrations: [__dirname+"../../migrations/*init{.ts,.js}"],
     synchronize: false,
     // logging: true
 }

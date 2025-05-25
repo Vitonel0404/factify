@@ -45,8 +45,8 @@ export class CompanyService {
         username: dbUser,
         password: dbPass,
         database: dbName,
-        entities: [join(__dirname, '../entities/**/*.entity.{ts,js}')],
-        migrations: [join(__dirname, '../../db/migrations/*migrations-tenant.{ts,js}')], //tener el archivo de migraciones para el tenant ya hecho. (name=migrations-tenant)
+        //entities: [join(__dirname, '../entities/**/*.entity.{ts,js}')],
+        migrations: [join(__dirname, '../common/migrations/*migrations-tenant.{ts,js}')], //tener el archivo de migraciones para el tenant ya hecho. (name=migrations-tenant)
       });
 
       await newDataSource.initialize();
