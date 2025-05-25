@@ -9,7 +9,8 @@ import { CompanyGuard } from "../middleware/company.guard";
 @Controller('customer')
 export class CustomerController {
   constructor(private readonly customerService: CustomerService) {}
-
+  
+  @UseGuards(CompanyGuard)
   @Post()
   create(@Body() createCustomerDto: CreateCustomerDto) {
     return this.customerService.create(createCustomerDto);

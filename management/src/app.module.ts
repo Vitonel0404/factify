@@ -11,7 +11,6 @@ import { TenancyModule } from './tenancy/tenancy.module';
       envFilePath: `.${process.env.NODE_ENV}.env`,
       isGlobal: true
     }),
-    // TypeOrmModule.forRoot({...DataSourceConfig}),
     CustomerModule,
     TenancyModule],
   controllers: [AppController],

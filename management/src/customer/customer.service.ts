@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
 import { DataSource, Repository } from 'typeorm';
@@ -15,7 +15,12 @@ export class CustomerService {
   }
 
   create(createCustomerDto: CreateCustomerDto) {
-    return 'This action adds a new customer';
+    try {
+      const new_customer = this.customerRepository.create(createCustomerDto);
+      return this.customerRepository.save(new_customer);
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
   }
 
   findAll() {
