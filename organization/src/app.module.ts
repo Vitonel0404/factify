@@ -8,6 +8,8 @@ import { CompanyModule } from './company/company.module';
 import { BranchModule } from './branch/branch.module';
 import { PlanModule } from './plan/plan.module';
 import { CompanyPlanModule } from './company_plan/company_plan.module';
+import { UserModule } from './user/user.module';
+import { AdminUserModule } from './admin_user/admin_user.module';
 
 @Module({
   imports: [
@@ -20,6 +22,8 @@ import { CompanyPlanModule } from './company_plan/company_plan.module';
     BranchModule,
     PlanModule,
     CompanyPlanModule,
+    UserModule,
+    AdminUserModule,
   ],
   controllers: [AppController],
   providers: [AppService],

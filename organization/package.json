@@ -25,11 +25,10 @@
     "typeorm:generate-migrations-local": "set NODE_ENV=local&& npm run typeorm migration:generate -- ./src/common/migrations/init",
     "typeorm:run-migrations-local": "set NODE_ENV=local&& npm run typeorm migration:run",
     "typeorm:generate-migrations-tenant-local": "set NODE_ENV=local&& npm run typeorm-tenat migration:generate -- ./src/common/migrations/migrations-tenant",
-
+    
     "typeorm:generate-migrations": "set NODE_ENV=develop&& npm run typeorm migration:generate -- ./src/common/migrations/init",
     "typeorm:run-migrations": "set NODE_ENV=develop&& npm run typeorm migration:run",
     "typeorm:generate-migrations-tenant": "set NODE_ENV=develop&& npm run typeorm-tenat migration:generate -- ./src/common/migrations/migrations-tenant"
-
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
@@ -38,6 +37,8 @@
     "@nestjs/mapped-types": "*",
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/typeorm": "^11.0.0",
+    "@types/bcrypt": "^5.0.2",
+    "bcrypt": "^6.0.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
     "pg": "^8.16.0",

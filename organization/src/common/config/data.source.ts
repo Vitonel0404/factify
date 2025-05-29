@@ -20,7 +20,9 @@ export const DataSourceConfig : DataSourceOptions = {
         join(__dirname, '../../company/entities/**/*.{ts,js}'),
         join(__dirname, '../../branch/entities/**/*.{ts,js}'),
         join(__dirname, '../../plan/entities/**/*.{ts,js}'),
-        join(__dirname, '../../company_plan/entities/**/*.{ts,js}')
+        join(__dirname, '../../company_plan/entities/**/*.{ts,js}'),
+        join(__dirname, '../../admin_user/entities/**/*.{ts,js}'),
+        join(__dirname, '../../user/entities/**/*.{ts,js}')
 
     ],
     migrations: [__dirname+"../../migrations/*init{.ts,.js}"],
