@@ -1,7 +1,7 @@
 import { ConfigModule, ConfigService } from "@nestjs/config";
+import { AdminUser } from "src/auth/entities/admin-user.entity";
 import { DataSource, DataSourceOptions } from "typeorm";
-import { AdminUser } from "src/user/entities/admin-user.entity";
-import { User } from "src/user/entities/user.entity";
+import { User } from "src/auth/entities/user.entity";
 
 ConfigModule.forRoot({
     envFilePath: `.${process.env.NODE_ENV}.env`,
