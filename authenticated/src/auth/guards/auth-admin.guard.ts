@@ -17,7 +17,7 @@ export class AuthAdminGuard implements CanActivate {
 
         try {
             const secret = jwtConstants.secret;
-            const user = this.jwtService.verifyAsync(token, {secret});
+            const user = await this.jwtService.verifyAsync(token, {secret});
             request.user = user;    
             return true;
         } catch (error) {
