@@ -100,6 +100,6 @@ export class CompanyService {
       throw new NotFoundException(`Company with id ${id_company} not found`);
     }
 
-    return { message: 'Company remove successfully' };
+    return { message: 'Company is not active successfully' };
   }
 }

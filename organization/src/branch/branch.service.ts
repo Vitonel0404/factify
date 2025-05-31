@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateBranchDto } from './dto/create-branch.dto';
 import { UpdateBranchDto } from './dto/update-branch.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -19,19 +19,43 @@ export class BranchService {
     }
   }
 
-  findAll() {
-    return `This action returns all branch`;
+  async findAll(id_company: number) {
+    try {
+      return await this.branchRepository.find({ where: { id_company } });
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} branch`;
+  async findOne(id_branch: number) {
+    try {
+      return await this.branchRepository.findOne({ where: { id_branch } });
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
   }
 
-  update(id: number, updateBranchDto: UpdateBranchDto) {
-    return `This action updates a #${id} branch`;
+  async update(id_branch: number, updateBranchDto: UpdateBranchDto) {
+    const branch = await this.branchRepository.findOne({ where: { id_branch } });
+
+    if (!branch) {
+      throw new NotFoundException(`Branch with id ${id_branch} not found`);
+    }
+
+    const updated = Object.assign(branch, updateBranchDto);
+    return await this.branchRepository.save(updated);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} branch`;
+  async remove(id_branch: number) {
+    const result = await this.branchRepository.update(
+      { id_branch },
+      { is_active: false }
+    );
+
+    if (result.affected === 0) {
+      throw new NotFoundException(`Branch with id ${id_branch} not found`);
+    }
+
+    return { message: 'Branch is not active successfully' };
   }
 }

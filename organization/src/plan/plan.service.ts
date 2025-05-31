@@ -1,26 +1,69 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreatePlanDto } from './dto/create-plan.dto';
 import { UpdatePlanDto } from './dto/update-plan.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Plan } from './entities/plan.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class PlanService {
-  create(createPlanDto: CreatePlanDto) {
-    return 'This action adds a new plan';
+
+  constructor(@InjectRepository(Plan) private planRepository: Repository<Plan>) { }
+
+  async create(createPlanDto: CreatePlanDto) {
+    try {
+      const new_plan = this.planRepository.create(createPlanDto);
+      return await this.planRepository.save(new_plan);
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
   }
 
-  findAll() {
-    return `This action returns all plan`;
+  async findAll() {
+    try {
+      return await this.planRepository.find();
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} plan`;
+  async findAllActive() {
+    try {
+      return await this.planRepository.findBy({ is_active: true });
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
   }
 
-  update(id: number, updatePlanDto: UpdatePlanDto) {
-    return `This action updates a #${id} plan`;
+  async findOne(id_plan: number) {
+    try {
+      return await this.planRepository.findBy({ id_plan });
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} plan`;
+  async update(id_plan: number, updatePlanDto: UpdatePlanDto) {
+    const branch = await this.planRepository.findOne({ where: { id_plan } });
+
+    if (!branch) {
+      throw new NotFoundException(`Plan with id ${id_plan} not found`);
+    }
+
+    const updated = Object.assign(branch, updatePlanDto);
+    return await this.planRepository.save(updated);
+  }
+
+  async remove(id_plan: number) {
+    const result = await this.planRepository.update(
+      { id_plan },
+      { is_active: false }
+    );
+
+    if (result.affected === 0) {
+      throw new NotFoundException(`Plan with id ${id_plan} not found`);
+    }
+
+    return { message: 'Plan is not active successfully' };
   }
 }
