@@ -8,22 +8,21 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class AdminUserService {
-   constructor(@InjectRepository(AdminUser) private readonly adminUserRepository : Repository<AdminUser>) {}
-  
-  
-    async create(createAdminUser: CreateAdminUserDto) {
-      console.log(createAdminUser);
-      try {
-        createAdminUser.password = await this.hashPassword(createAdminUser.password);
-        const new_user = this.adminUserRepository.create(createAdminUser);
-        return this.adminUserRepository.save(new_user);
-      } catch (error) {
-        throw new InternalServerErrorException(error.message);
-      }
+  constructor(@InjectRepository(AdminUser) private readonly adminUserRepository: Repository<AdminUser>) { }
+
+
+  async create(createAdminUser: CreateAdminUserDto) {
+    try {
+      createAdminUser.password = await this.hashPassword(createAdminUser.password);
+      const new_user = this.adminUserRepository.create(createAdminUser);
+      return this.adminUserRepository.save(new_user);
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
     }
-  
-    hashPassword(password:string): Promise<string>{
-      const saltOrRounds = 10;
-      return bcrypt.hash(password, saltOrRounds);
-    }
+  }
+
+  hashPassword(password: string): Promise<string> {
+    const saltOrRounds = 10;
+    return bcrypt.hash(password, saltOrRounds);
+  }
 }

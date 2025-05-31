@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { join } from 'path';
@@ -13,7 +13,7 @@ export class CompanyService {
 
   constructor(
     @InjectRepository(Company)
-    private companyRepo: Repository<Company>,
+    private companyRepository: Repository<Company>,
     private configService: ConfigService,
   ) { }
 
@@ -54,8 +54,8 @@ export class CompanyService {
       await newDataSource.destroy();
 
       // Guardar en tabla `companies` de la base principal
-      const newCompany = this.companyRepo.create({...createCompanyDto,db_name:dbName});
-      await this.companyRepo.save(newCompany);
+      const newCompany = this.companyRepository.create({...createCompanyDto,db_name:dbName});
+      await this.companyRepository.save(newCompany);
 
       return { message: `Base de datos '${dbName}' creada y sincronizada`, dbName };
     } catch (err) {
@@ -63,19 +63,43 @@ export class CompanyService {
     }
   }
 
-  findAll() {
-    return `This action returns all company`;
+  async findAll() {
+    try {
+      return await this.companyRepository.find();
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} company`;
+  async findOne(id_company: number) {
+    try {
+      return await this.companyRepository.findOne({ where: { id_company} });
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
   }
 
-  update(id: number, updateCompanyDto: UpdateCompanyDto) {
-    return `This action updates a #${id} company`;
+  async update(id_company: number, updateCompanyDto: UpdateCompanyDto) {
+    const company = await this.companyRepository.findOne({ where: { id_company } });
+
+    if (!company) {
+      throw new NotFoundException(`Company with id ${id_company} not found`);
+    }
+
+    const updated = Object.assign(company, updateCompanyDto);
+    return await this.companyRepository.save(updated);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} company`;
+  async remove(id_company: number) {
+    const result = await this.companyRepository.update(
+      { id_company },
+      { is_active :  false }
+    );
+
+    if (result.affected === 0) {
+      throw new NotFoundException(`Company with id ${id_company} not found`);
+    }
+
+    return { message: 'Company remove successfully' };
   }
 }

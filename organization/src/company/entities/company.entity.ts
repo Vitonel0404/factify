@@ -8,10 +8,10 @@ export class Company {
   @Column({ type: 'varchar', length: 20 })
   ruc: string;
 
-  @Column({ type: 'varchar', length: 150 })
+  @Column({ type: 'varchar', length: 150, unique: true })
   legal_name: string;
 
-  @Column({ type: 'varchar', length: 150 })
+  @Column({ type: 'varchar', length: 150, unique: true })
   email: string;
 
   @Column({ type: 'varchar', length: 20 })

@@ -8,7 +8,7 @@ export class Branch {
   @Column({ type: 'int' })
   id_company: number;
 
-  @Column({ type: 'varchar', length: 100 })
+  @Column({ type: 'varchar', length: 100, unique: true })
   trade_name: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
