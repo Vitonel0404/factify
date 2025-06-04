@@ -16,6 +16,6 @@ async function bootstrap() {
   );
 
   await app.listen(+configService.get('PORT'));
-  console.log("Service running on port",configService.get('PORT') );
+  console.log("Management service running on port",configService.get('PORT') );
 }
 bootstrap();

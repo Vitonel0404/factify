@@ -27,23 +27,6 @@ export class CreateMeasureDto {
   is_eliminated?: boolean;
 }
 
-// CATEGORY
-export class CreateCategoryDto {
-  @IsInt()
-  id_branch: number;
-
-  @IsString()
-  description: string;
-
-  @IsOptional()
-  @IsBoolean()
-  is_active?: boolean;
-
-  @IsOptional()
-  @IsBoolean()
-  is_eliminated?: boolean;
-}
-
 // PRODUCT
 export class CreateProductDto {
   @IsInt()
@@ -67,32 +50,6 @@ export class CreateProductDto {
 
   @IsNumber()
   minimum_stock: number;
-
-  @IsOptional()
-  @IsBoolean()
-  is_active?: boolean;
-
-  @IsOptional()
-  @IsBoolean()
-  is_eliminated?: boolean;
-}
-
-// CORRELATIVE
-export class CreateCorrelativeDto {
-  @IsInt()
-  id_branch: number;
-
-  @IsInt()
-  id_voucher_type: number;
-
-  @IsString()
-  series: string;
-
-  @IsInt()
-  last_number: number;
-
-  @IsInt()
-  maximun_correlative: number;
 
   @IsOptional()
   @IsBoolean()
