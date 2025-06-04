@@ -6,7 +6,6 @@ import {
   IsEmail,
 } from 'class-validator';
 
-
 export class CreateCustomerDto {
   @IsInt()
   id_document_type: number;

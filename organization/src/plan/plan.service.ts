@@ -44,26 +44,38 @@ export class PlanService {
   }
 
   async update(id_plan: number, updatePlanDto: UpdatePlanDto) {
-    const branch = await this.planRepository.findOne({ where: { id_plan } });
+    try {
+      const branch = await this.planRepository.findOne({ where: { id_plan } });
 
-    if (!branch) {
-      throw new NotFoundException(`Plan with id ${id_plan} not found`);
+      if (!branch) throw new NotFoundException(`Plan with id ${id_plan} not found`);
+
+      const updated = Object.assign(branch, updatePlanDto);
+
+      return await this.planRepository.save(updated);
+
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
     }
 
-    const updated = Object.assign(branch, updatePlanDto);
-    return await this.planRepository.save(updated);
   }
 
   async remove(id_plan: number) {
-    const result = await this.planRepository.update(
-      { id_plan },
-      { is_active: false }
-    );
+    try {
 
-    if (result.affected === 0) {
-      throw new NotFoundException(`Plan with id ${id_plan} not found`);
+      const result = await this.planRepository.update(
+        { id_plan },
+        { is_active: false }
+      );
+
+      if (result.affected === 0) {
+        throw new NotFoundException(`Plan with id ${id_plan} not found`);
+      }
+
+      return { message: 'Plan is not active' };
+
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
     }
 
-    return { message: 'Plan is not active successfully' };
   }
 }

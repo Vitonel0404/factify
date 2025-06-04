@@ -35,8 +35,8 @@ export const TenantProvider: Provider = {
       port: +configService.get('DB_PORT'),
       username: configService.get('DB_USERNAME'),
       password: configService.get('DB_PASSWORD'),
-      database: tenant, // << aquí es donde cambia dinámicamente
-      entities: [Customer], // O usa glob si prefieres
+      database: tenant,
+      entities: [__dirname + '/../**/*.entity{.ts,.js}'],
       synchronize: false,
     };
     const dataSource = new DataSource(options);

@@ -8,7 +8,7 @@ export class Customer {
   @Column({ type: 'int' })
   id_document_type: number;
 
-  @Column({ type: 'varchar', length: 15 })
+  @Column({ type: 'varchar', length: 15, unique: true })
   document_number: string;
 
   @Column({ type: 'varchar', length: 250 })
