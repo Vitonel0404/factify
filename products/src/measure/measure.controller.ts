@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
 import { MeasureService } from './measure.service';
 import { CreateMeasureDto } from './dto/create-measure.dto';
 import { UpdateMeasureDto } from './dto/update-measure.dto';
@@ -22,7 +22,7 @@ export class MeasureController {
     return this.measureService.findOne(+id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   update(@Param('id') id: string, @Body() updateMeasureDto: UpdateMeasureDto) {
     return this.measureService.update(+id, updateMeasureDto);
   }

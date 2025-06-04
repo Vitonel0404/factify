@@ -10,56 +10,6 @@ import {
   IsPositive,
 } from 'class-validator';
 
-// MEASURE
-export class CreateMeasureDto {
-  @IsInt()
-  id_branch: number;
-
-  @IsString()
-  description: string;
-
-  @IsOptional()
-  @IsBoolean()
-  is_active?: boolean;
-
-  @IsOptional()
-  @IsBoolean()
-  is_eliminated?: boolean;
-}
-
-// PRODUCT
-export class CreateProductDto {
-  @IsInt()
-  id_branch: number;
-
-  @IsInt()
-  id_category: number;
-
-  @IsInt()
-  id_measure: number;
-
-  @IsString()
-  description: string;
-
-  @IsNumber()
-  @IsPositive()
-  price: number;
-
-  @IsNumber()
-  stock: number;
-
-  @IsNumber()
-  minimum_stock: number;
-
-  @IsOptional()
-  @IsBoolean()
-  is_active?: boolean;
-
-  @IsOptional()
-  @IsBoolean()
-  is_eliminated?: boolean;
-}
-
 // SALE
 export class CreateSaleDto {
   @IsInt()

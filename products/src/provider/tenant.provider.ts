@@ -4,8 +4,6 @@ import { Request } from 'express';
 import { DataSource } from 'typeorm';
 import { DataSourceOptions } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
-import { Customer } from 'src/customer/entities/customer.entity';
-
 
 export const TENANT_CONNECTION = 'TENANT_CONNECTION';
 
