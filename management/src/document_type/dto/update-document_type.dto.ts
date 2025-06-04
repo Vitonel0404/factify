@@ -8,8 +8,4 @@ export class UpdateDocumentTypeDto {
     @IsOptional()
     @IsBoolean()
     is_active?: boolean;
-
-    @IsOptional()
-    @IsBoolean()
-    is_eliminated?: boolean;
 }
