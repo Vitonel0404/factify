@@ -5,7 +5,7 @@ export class PaymentMethod {
   @PrimaryGeneratedColumn({ type: 'int' })
   id_payment_method: number;
 
-  @Column({ type: 'varchar', length: 100 })
+  @Column({ type: 'varchar', length: 100, unique: true })
   description: string;
 
   @Column({ type: 'boolean', default: true })
