@@ -46,7 +46,7 @@ services:
 
   products:
     build:
-      context: ./management
+      context: ./products
     ports:
       - "3004:3000"
     networks:
@@ -54,7 +54,7 @@ services:
 
   sales:
     build:
-      context: ./management
+      context: ./sales
     ports:
       - "3005:3000"
     networks:
