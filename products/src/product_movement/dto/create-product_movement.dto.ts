@@ -1,4 +1,4 @@
-import { IsBoolean, IsInt, IsNumber, IsOptional, IsString, IsIn } from 'class-validator';
+import { IsInt, IsNumber, IsOptional, IsString, IsIn } from 'class-validator';
 
 export class CreateProductMovementDto {
   @IsInt()

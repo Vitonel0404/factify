@@ -26,7 +26,7 @@ export class SaleService {
 
   }
 
-  async create(createSaleDto: CreateSaleDto, tenancy : string) {
+  async create(createSaleDto: CreateSaleDto, tenancy: string) {
     const { detail, payment } = createSaleDto
 
     createSaleDto.total = detail.reduce((sum, item) => sum + item.subtotal, 0);
@@ -39,13 +39,21 @@ export class SaleService {
 
     const newSale = this.saleRepository.create(createSaleDto);
     const savedSale = await this.saleRepository.save(newSale);
-   
+
     for (const item of detail) {
       item.id_sale = savedSale.id_sale;
       await this.saleDetailService.create(item);
       await this.unitDiscountExternal(+item.id_product, +item.quantity, tenancy)
+      await this.createProductMovementExternal({
+          id_branch: savedSale.id_branch,
+          id_product: +item.id_product, 
+          quantity: +item.quantity,
+          movement_type:'EGRESO',
+          observation: `VENTA ${createSaleDto.series}-${createSaleDto.number}`
+        },
+        tenancy)
     }
-    
+
     for (const pay of payment) {
       pay.id_sale = savedSale.id_sale;
       await this.paymentSaleService.create(pay);
@@ -54,13 +62,10 @@ export class SaleService {
     return savedSale;
   }
 
-  async unitDiscountExternal(id_product: number, unitsToDiscount: number, tenancy : string){
-
-    console.log(`${this.configService.get<string>('URL_PRODUCTS_SERVICE')}/discount/${id_product}/${unitsToDiscount}`);
-    
+  async unitDiscountExternal(id_product: number, unitsToDiscount: number, tenancy: string) {
     try {
       const response = await firstValueFrom(
-        this.httpService.get(`${this.configService.get<string>('URL_PRODUCTS_SERVICE')}/discount/${id_product}/${unitsToDiscount}`,
+        this.httpService.get(`${this.configService.get<string>('URL_PRODUCTS_SERVICE')}/product/discount/${id_product}/${unitsToDiscount}`,
           {
             headers: {
               'x-tenant-id': tenancy,
@@ -70,8 +75,26 @@ export class SaleService {
       );
       return response.data;
     } catch (error) {
-      console.error('Error en postToExternal:', error?.response?.data || error.message);
+      console.error('Error en unitDiscountExternal:', error?.resaaaaaponse?.data || error.message);
       throw new InternalServerErrorException('Error al enviar datos al servicio externo de descuento');
+    }
+  }
+
+  async createProductMovementExternal(productMovement : any, tenancy: string) {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.post(`${this.configService.get<string>('URL_PRODUCTS_SERVICE')}/product-movement`,productMovement,
+          {
+            headers: {
+              'x-tenant-id': tenancy,
+            },
+          }
+        )
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error en createProductMovementExternal:', error?.response?.data || error.message);
+      throw new InternalServerErrorException('Error al enviar datos al servicio externo de registro de movimientos');
     }
   }
 
