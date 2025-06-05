@@ -6,6 +6,7 @@ import { MeasureModule } from './measure/measure.module';
 import { ProductModule } from './product/product.module';
 import { TenancyModule } from './tenancy/tenancy.module';
 import { ConfigModule } from '@nestjs/config';
+import { ProductMovementModule } from './product_movement/product_movement.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -15,7 +16,9 @@ import { ConfigModule } from '@nestjs/config';
     CategoryModule,
     MeasureModule,
     ProductModule,
-    TenancyModule],
+    TenancyModule,
+    ProductMovementModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

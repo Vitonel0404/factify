@@ -8,7 +8,7 @@ export class User {
   @Column({ type: 'int' })
   id_branch: number;
 
-  @Column({ type: 'varchar', length: 100 })
+  @Column({ type: 'varchar', length: 100, unique: true })
   user_name: string;
 
   @Column({ type: 'varchar', length: 255 })
@@ -20,7 +20,7 @@ export class User {
   @Column({ type: 'varchar', length: 100 })
   last_name: string;
 
-  @Column({ type: 'varchar', length: 150 })
+  @Column({ type: 'varchar', length: 150, unique: true })
   email: string;
 
   @Column({ type: 'varchar', length: 20, nullable: true })
