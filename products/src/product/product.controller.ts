@@ -37,4 +37,10 @@ export class ProductController {
   remove(@Param('id') id: string) {
     return this.productService.remove(+id);
   }
+
+  @UseGuards(CompanyGuard)
+  @Get('discount/:id_product/:unitsToDiscount')
+  unitDiscount(@Param('id_product') id_product: string,@Param('unitsToDiscount') unitsToDiscount: string) {
+    return this.productService.unitDiscount(+id_product,+unitsToDiscount);
+  }
 }

@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
 import { SaleService } from './sale.service';
 import { CreateSaleDto } from './dto/create-sale.dto';
 import { UpdateSaleDto } from './dto/update-sale.dto';
 import { CompanyGuard } from 'src/middleware/company.guard';
+import { Request } from 'express';
 
 @Controller('sale')
 export class SaleController {
@@ -10,8 +11,13 @@ export class SaleController {
 
   @UseGuards(CompanyGuard)
   @Post()
-  create(@Body() createSaleDto: CreateSaleDto) {
-    return this.saleService.create(createSaleDto);
+  create(@Req() req: Request, @Body() createSaleDto: CreateSaleDto) {
+
+    const tenancy = Array.isArray(req.headers['x-tenant-id'])
+    ? req.headers['x-tenant-id'][0]
+    : req.headers['x-tenant-id'] || '';
+
+    return this.saleService.create(createSaleDto,tenancy);
   }
 
   @Get()

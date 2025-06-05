@@ -25,4 +25,28 @@ export class ProxyController {
     await this.proxyService.forwardRequest(req, res, 'http://organization:3000');
   }
 
+  @All('manage/*')
+  @UseGuards(AuthAdminGuard)
+  async proxyToManagement(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    const cleanedUrl = req.originalUrl.replace(/^\/proxy\/manage/, '');
+    req.url = cleanedUrl;
+    await this.proxyService.forwardRequest(req, res, 'http://management:3000');
+  }
+
+  @All('products/*')
+  @UseGuards(AuthAdminGuard)
+  async proxyToProducts(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    const cleanedUrl = req.originalUrl.replace(/^\/proxy\/products/, '');
+    req.url = cleanedUrl;
+    await this.proxyService.forwardRequest(req, res, 'http://products:3000');
+  }
+
+  @All('sales/*')
+  @UseGuards(AuthAdminGuard)
+  async proxyToSales(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    const cleanedUrl = req.originalUrl.replace(/^\/proxy\/sales/, '');
+    req.url = cleanedUrl;
+    await this.proxyService.forwardRequest(req, res, 'http://sales:3000');
+  }
+
 }

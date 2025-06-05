@@ -67,4 +67,25 @@ export class ProductService {
       throw new InternalServerErrorException(error.message);
     }
   }
+
+  async unitDiscount(id_product: number, unitsToDiscount: number) {
+    try {
+      const product = await this.productRepository.findOne({ where: { id_product } });
+
+      if (!product) {
+        throw new NotFoundException(`Product with id ${id_product} not found`);
+      }
+
+      if (product.stock < unitsToDiscount) {
+        throw new Error(`Insufficient stock. Available: ${product.stock}, requested: ${unitsToDiscount}`);
+      }
+
+      product.stock -= unitsToDiscount;
+
+      return await this.productRepository.save(product);
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
 }
