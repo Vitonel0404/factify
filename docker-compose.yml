@@ -36,6 +36,30 @@ services:
     networks:
       - factify-network
 
+  management:
+    build:
+      context: ./management
+    ports:
+      - "3003:3000"
+    networks:
+      - factify-network
+
+  products:
+    build:
+      context: ./management
+    ports:
+      - "3004:3000"
+    networks:
+      - factify-network
+
+  sales:
+    build:
+      context: ./management
+    ports:
+      - "3005:3000"
+    networks:
+      - factify-network
+      
 networks:
   factify-network:
     driver: bridge
