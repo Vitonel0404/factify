@@ -1,12 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { SaleService } from './sale.service';
 import { CreateSaleDto } from './dto/create-sale.dto';
 import { UpdateSaleDto } from './dto/update-sale.dto';
+import { CompanyGuard } from 'src/middleware/company.guard';
 
 @Controller('sale')
 export class SaleController {
   constructor(private readonly saleService: SaleService) {}
 
+  @UseGuards(CompanyGuard)
   @Post()
   create(@Body() createSaleDto: CreateSaleDto) {
     return this.saleService.create(createSaleDto);

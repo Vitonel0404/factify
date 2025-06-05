@@ -22,16 +22,19 @@ export class CustomerController {
     return this.customerService.findAll();
   }
 
+  @UseGuards(CompanyGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.customerService.findOne(+id);
   }
 
+  @UseGuards(CompanyGuard)
   @Put(':id')
   update(@Param('id') id: string, @Body() updateCustomerDto: UpdateCustomerDto) {
     return this.customerService.update(+id, updateCustomerDto);
   }
 
+  @UseGuards(CompanyGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.customerService.remove(+id);
