@@ -7,18 +7,14 @@ import { TENANT_CONNECTION } from 'src/provider/tenant.provider';
 
 @Injectable()
 export class ProductMovementService {
-private readonly productMovementRepository: Repository<ProductMovement>
+  private readonly productMovementRepository: Repository<ProductMovement>
 
   constructor(@Inject(TENANT_CONNECTION) private readonly connection: DataSource) {
     this.productMovementRepository = this.connection.getRepository(ProductMovement);
   }
 
   create(createProductMovementDto: CreateProductMovementDto) {
-    try {
-      const new_movement = this.productMovementRepository.create(createProductMovementDto);
-      return this.productMovementRepository.save(new_movement);
-    } catch (error) {
-      throw new InternalServerErrorException(error.message);
-    }
+    const new_movement = this.productMovementRepository.create(createProductMovementDto);
+    return this.productMovementRepository.save(new_movement);
   }
 }
