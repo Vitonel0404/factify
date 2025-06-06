@@ -59,6 +59,14 @@ services:
       - "3005:3000"
     networks:
       - factify-network
+
+  purchases:
+    build:
+      context: ./purchases
+    ports:
+      - "3006:3000"
+    networks:
+      - factify-network
       
 networks:
   factify-network:
