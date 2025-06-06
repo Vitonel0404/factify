@@ -76,11 +76,30 @@ export class ProductService {
         throw new NotFoundException(`Product with id ${id_product} not found`);
       }
 
+      product.stock = Number(product.stock);
+
       if (product.stock < unitsToDiscount) {
         throw new Error(`Insufficient stock. Available: ${product.stock}, requested: ${unitsToDiscount}`);
       }
 
       product.stock -= unitsToDiscount;
+
+      return await this.productRepository.save(product);
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  async unitIncrease(id_product: number, unitsToIncrease: number) {
+    try {
+      const product = await this.productRepository.findOne({ where: { id_product } });
+      console.log(product);
+      
+      if (!product) {
+        throw new NotFoundException(`Product with id ${id_product} not found`);
+      }
+
+      product.stock = Number(product.stock) + Number(unitsToIncrease);
 
       return await this.productRepository.save(product);
     } catch (error) {

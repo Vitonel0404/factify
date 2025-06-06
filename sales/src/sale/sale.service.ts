@@ -75,7 +75,7 @@ export class SaleService {
       );
       return response.data;
     } catch (error) {
-      console.error('Error en unitDiscountExternal:', error?.resaaaaaponse?.data || error.message);
+      console.error('Error en unitDiscountExternal:', error?.response?.data || error.message);
       throw new InternalServerErrorException('Error al enviar datos al servicio externo de descuento');
     }
   }

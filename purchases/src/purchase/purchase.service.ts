@@ -1,0 +1,108 @@
+import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { CreatePurchaseDto } from './dto/create-purchase.dto';
+import { UpdatePurchaseDto } from './dto/update-purchase.dto';
+import { DataSource, Repository } from 'typeorm';
+import { Purchase } from './entities/purchase.entity';
+import { TENANT_CONNECTION } from 'src/provider/tenant.provider';
+import { ConfigService } from '@nestjs/config';
+import { HttpService } from '@nestjs/axios';
+import { PurchaseDetailService } from 'src/purchase_detail/purchase_detail.service';
+import { firstValueFrom } from 'rxjs';
+
+@Injectable()
+export class PurchaseService {
+  private readonly purchaseRepository: Repository<Purchase>
+
+  constructor(
+    @Inject(TENANT_CONNECTION) private readonly connection: DataSource,
+    private readonly purchaseDetailService: PurchaseDetailService,
+    private readonly configService: ConfigService,
+    private readonly httpService: HttpService
+
+  ) {
+    this.purchaseRepository = this.connection.getRepository(Purchase);
+  }
+
+  async create(createPurchaseDto: CreatePurchaseDto, tenancy: string) {
+    const { detail } = createPurchaseDto
+
+    createPurchaseDto.total = detail.reduce((sum: any, item: any) => sum + item.subtotal, 0);
+
+    createPurchaseDto.igv = 10,
+    createPurchaseDto.igv_percent = 10
+    createPurchaseDto.taxed_operation = 10;
+    createPurchaseDto.series = 'F001'
+    createPurchaseDto.number = 10;
+
+    const newPurchase = this.purchaseRepository.create(createPurchaseDto);
+    const savedPurchase = await this.purchaseRepository.save(newPurchase);
+
+    for (const item of detail) {
+      item.id_purchase = savedPurchase.id_purchase;
+      await this.purchaseDetailService.create(item);
+      await this.unitIncreaseExternal(+item.id_product, +item.quantity, tenancy)
+      await this.createProductMovementExternal({
+          id_branch: savedPurchase.id_branch,
+          id_product: +item.id_product, 
+          quantity: +item.quantity,
+          movement_type:'INGRESO',
+          observation: `COMPRA ${createPurchaseDto.series}-${createPurchaseDto.number}`
+        },
+        tenancy)
+    }
+
+    return savedPurchase;
+  }
+
+  async unitIncreaseExternal(id_product: number, unitsToIncrease: number, tenancy: string) {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.get(`${this.configService.get<string>('URL_PRODUCTS_SERVICE')}/product/increase/${id_product}/${unitsToIncrease}`,
+          {
+            headers: {
+              'x-tenant-id': tenancy,
+            },
+          }
+        )
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error en unitIncreaseExternal:', error?.response?.data || error.message);
+      throw new InternalServerErrorException('Error al enviar datos al servicio externo de incremento');
+    }
+  }
+
+  async createProductMovementExternal(productMovement: any, tenancy: string) {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.post(`${this.configService.get<string>('URL_PRODUCTS_SERVICE')}/product-movement`, productMovement,
+          {
+            headers: {
+              'x-tenant-id': tenancy,
+            },
+          }
+        )
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error en createProductMovementExternal:', error?.response?.data || error.message);
+      throw new InternalServerErrorException('Error al enviar datos al servicio externo de registro de movimientos');
+    }
+  }
+
+  findAll() {
+    return `This action returns all purchase`;
+  }
+
+  findOne(id: number) {
+    return `This action returns a #${id} purchase`;
+  }
+
+  update(id: number, updatePurchaseDto: UpdatePurchaseDto) {
+    return `This action updates a #${id} purchase`;
+  }
+
+  remove(id: number) {
+    return `This action removes a #${id} purchase`;
+  }
+}

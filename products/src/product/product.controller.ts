@@ -6,7 +6,7 @@ import { CompanyGuard } from 'src/middleware/company.guard';
 
 @Controller('product')
 export class ProductController {
-  constructor(private readonly productService: ProductService) {}
+  constructor(private readonly productService: ProductService) { }
 
   @UseGuards(CompanyGuard)
   @Post()
@@ -40,7 +40,13 @@ export class ProductController {
 
   @UseGuards(CompanyGuard)
   @Get('discount/:id_product/:unitsToDiscount')
-  unitDiscount(@Param('id_product') id_product: string,@Param('unitsToDiscount') unitsToDiscount: string) {
-    return this.productService.unitDiscount(+id_product,+unitsToDiscount);
+  unitDiscount(@Param('id_product') id_product: string, @Param('unitsToDiscount') unitsToDiscount: string) {
+    return this.productService.unitDiscount(+id_product, +unitsToDiscount);
+  }
+
+  @UseGuards(CompanyGuard)
+  @Get('increase/:id_product/:unitsToIncrease')
+  unitIncrease(@Param('id_product') id_product: string, @Param('unitsToIncrease') unitsToIncrease: string) {
+    return this.productService.unitIncrease(+id_product, +unitsToIncrease);
   }
 }
