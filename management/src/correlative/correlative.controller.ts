@@ -27,6 +27,12 @@ export class CorrelativeController {
   }
 
   @UseGuards(CompanyGuard)
+  @Get('voucher/:id_branch/:id_voucher_type')
+  findOneByVoucher(@Param('id_branch') id_branch: string, @Param('id_voucher_type') id_voucher_type: string) {
+    return this.correlativeService.findOneByVoucher(+id_branch,+id_voucher_type);
+  }
+
+  @UseGuards(CompanyGuard)
   @Put(':id')
   update(@Param('id') id: string, @Body() updateCorrelativeDto: UpdateCorrelativeDto) {
     return this.correlativeService.update(+id, updateCorrelativeDto);

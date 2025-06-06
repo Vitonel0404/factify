@@ -1,4 +1,4 @@
-import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ConflictException, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateSaleDto } from './dto/create-sale.dto';
 import { UpdateSaleDto } from './dto/update-sale.dto';
 import { Sale } from './entities/sale.entity';
@@ -31,15 +31,18 @@ export class SaleService {
 
     createSaleDto.total = detail.reduce((sum, item) => sum + item.subtotal, 0);
 
+    const correlative = await this.getVoucherNumerExternal(createSaleDto.id_branch, createSaleDto.id_voucher_type, tenancy);
+
+    if (correlative === '') throw new ConflictException('No existe un correlativo vigente.');
+  
     createSaleDto.igv = 10,
     createSaleDto.igv_percent = 10
     createSaleDto.taxed_operation = 10;
-    createSaleDto.series = 'F001'
-    createSaleDto.number = 10;
+    createSaleDto.series = correlative.series
+    createSaleDto.number = correlative.last_number + 1;
 
     const newSale = this.saleRepository.create(createSaleDto);
     const savedSale = await this.saleRepository.save(newSale);
-
     for (const item of detail) {
       item.id_sale = savedSale.id_sale;
       await this.saleDetailService.create(item);
@@ -60,6 +63,24 @@ export class SaleService {
     }
 
     return savedSale;
+  }
+
+  async getVoucherNumerExternal(id_branch: number, id_voucher: number, tenancy : string){
+    try {
+      const response = await firstValueFrom(
+        this.httpService.get(`${this.configService.get<string>('URL_MANAGEMENT_SERVICE')}/correlative/voucher/${id_branch}/${id_voucher}`,
+          {
+            headers: {
+              'x-tenant-id': tenancy,
+            },
+          }
+        )
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error en getVoucherNumerExternal:', error?.response?.data || error.message);
+      throw new InternalServerErrorException('Error al enviar datos al servicio externo de otención de correlativos');
+    }
   }
 
   async unitDiscountExternal(id_product: number, unitsToDiscount: number, tenancy: string) {

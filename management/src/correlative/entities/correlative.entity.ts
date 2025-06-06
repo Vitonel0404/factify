@@ -11,10 +11,10 @@ export class Correlative {
   @Column({ type: 'int' })
   id_voucher_type: number;
 
-  @Column({ type: 'varchar', length: 10, unique: true })
+  @Column({ type: 'varchar', length: 10 })
   series: string;
 
-  @Column({ type: 'int' })
+  @Column({ type: 'int', nullable: true })
   last_number: number;
 
   @Column({ type: 'int' })

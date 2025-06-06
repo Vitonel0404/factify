@@ -42,6 +42,14 @@ export class CorrelativeService {
     }
   }
 
+  findOneByVoucher(id_branch: number, id_voucher_type: number) {
+    try {
+      return this.correlativeRepository.findOneBy({ id_branch, id_voucher_type, is_active : true, is_eliminated : false });
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
   async update(id_correlative: number, updateCorrelativeDto: UpdateCorrelativeDto) {
     try {
       const correlative = await this.correlativeRepository.findOne({ where: { id_correlative } });
