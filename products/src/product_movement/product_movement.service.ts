@@ -1,9 +1,9 @@
 import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { CreateProductMovementDto } from './dto/create-product_movement.dto';
-import { UpdateProductMovementDto } from './dto/update-product_movement.dto';
+
 import { ProductMovement } from './entities/product_movement.entity';
 import { DataSource, Repository } from 'typeorm';
 import { TENANT_CONNECTION } from 'src/provider/tenant.provider';
+import { CreateProductMovementDto, CreateProductMovementsDto } from './dto/create-product_movement.dto';
 
 @Injectable()
 export class ProductMovementService {
@@ -13,7 +13,30 @@ export class ProductMovementService {
     this.productMovementRepository = this.connection.getRepository(ProductMovement);
   }
 
-  create(createProductMovementDto: CreateProductMovementDto) {
+  async createMovements(movements: CreateProductMovementDto[]) {
+    const results: {
+      id_product: number;
+      status: 'ok' | 'error';
+      error?: string;
+    }[] = [];
+
+    for (const movement of movements) {
+      try {
+        await this.create(movement);
+        results.push({ id_product: movement.id_product, status: 'ok' });
+      } catch (error) {
+        results.push({
+          id_product: movement.id_product,
+          status: 'error',
+          error: error?.message ?? 'Unknown error',
+        });
+      }
+    }
+
+    return { summary: results };
+  }
+
+  async create(createProductMovementDto: CreateProductMovementDto) {
     const new_movement = this.productMovementRepository.create(createProductMovementDto);
     return this.productMovementRepository.save(new_movement);
   }

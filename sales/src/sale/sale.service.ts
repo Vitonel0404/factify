@@ -1,4 +1,4 @@
-import { ConflictException, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ConflictException, Inject, Injectable, InternalServerErrorException, Type } from '@nestjs/common';
 import { CreateSaleDto } from './dto/create-sale.dto';
 import { UpdateSaleDto } from './dto/update-sale.dto';
 import { Sale } from './entities/sale.entity';
@@ -9,6 +9,19 @@ import { PaymentSaleService } from 'src/payment_sale/payment_sale.service';
 import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
+
+type productsToDiscount = {
+  id_product: number;
+  quantity: number;
+};
+
+type productsToMovement = {
+  id_branch: number,
+  id_product: number,
+  quantity: number,
+  movement_type: string,
+  observation: string
+};
 
 @Injectable()
 export class SaleService {
@@ -34,7 +47,7 @@ export class SaleService {
     const correlative = await this.getVoucherNumerExternal(createSaleDto.id_branch, createSaleDto.id_voucher_type, tenancy);
 
     if (correlative === '') throw new ConflictException('No existe un correlativo vigente.');
-  
+
     createSaleDto.igv = 10,
     createSaleDto.igv_percent = 10
     createSaleDto.taxed_operation = 10;
@@ -43,18 +56,27 @@ export class SaleService {
 
     const newSale = this.saleRepository.create(createSaleDto);
     const savedSale = await this.saleRepository.save(newSale);
+
+    const productsToDiscount: productsToDiscount[] = [];
+    const movements: productsToMovement[] = []
+
     for (const item of detail) {
       item.id_sale = savedSale.id_sale;
+
       await this.saleDetailService.create(item);
-      await this.unitDiscountExternal(+item.id_product, +item.quantity, tenancy)
-      await this.createProductMovementExternal({
-          id_branch: savedSale.id_branch,
-          id_product: +item.id_product, 
-          quantity: +item.quantity,
-          movement_type:'EGRESO',
-          observation: `VENTA ${createSaleDto.series}-${createSaleDto.number}`
-        },
-        tenancy)
+
+      productsToDiscount.push({
+        id_product: +item.id_product,
+        quantity: +item.quantity,
+      });
+
+      movements.push({
+        id_branch: savedSale.id_branch,
+        id_product: +item.id_product,
+        quantity: +item.quantity,
+        movement_type: 'EGRESO',
+        observation: `VENTA ${createSaleDto.series}-${createSaleDto.number}`
+      })
     }
 
     for (const pay of payment) {
@@ -62,10 +84,14 @@ export class SaleService {
       await this.paymentSaleService.create(pay);
     }
 
+    await this.unitDiscountExternal(productsToDiscount, tenancy);
+    await this.createProductMovementExternal(movements, tenancy);
+
+
     return savedSale;
   }
 
-  async getVoucherNumerExternal(id_branch: number, id_voucher: number, tenancy : string){
+  async getVoucherNumerExternal(id_branch: number, id_voucher: number, tenancy: string) {
     try {
       const response = await firstValueFrom(
         this.httpService.get(`${this.configService.get<string>('URL_MANAGEMENT_SERVICE')}/correlative/voucher/${id_branch}/${id_voucher}`,
@@ -83,10 +109,11 @@ export class SaleService {
     }
   }
 
-  async unitDiscountExternal(id_product: number, unitsToDiscount: number, tenancy: string) {
+  async unitDiscountExternal(products: productsToDiscount[], tenancy: string) {
     try {
       const response = await firstValueFrom(
-        this.httpService.get(`${this.configService.get<string>('URL_PRODUCTS_SERVICE')}/product/discount/${id_product}/${unitsToDiscount}`,
+        this.httpService.post(`${this.configService.get<string>('URL_PRODUCTS_SERVICE')}/product/discount`,
+          { products },
           {
             headers: {
               'x-tenant-id': tenancy,
@@ -101,10 +128,10 @@ export class SaleService {
     }
   }
 
-  async createProductMovementExternal(productMovement : any, tenancy: string) {
+  async createProductMovementExternal(movements: productsToMovement[], tenancy: string) {
     try {
       const response = await firstValueFrom(
-        this.httpService.post(`${this.configService.get<string>('URL_PRODUCTS_SERVICE')}/product-movement`,productMovement,
+        this.httpService.post(`${this.configService.get<string>('URL_PRODUCTS_SERVICE')}/product-movement`, { movements },
           {
             headers: {
               'x-tenant-id': tenancy,

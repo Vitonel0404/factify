@@ -1,7 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { ProductMovementService } from './product_movement.service';
-import { CreateProductMovementDto } from './dto/create-product_movement.dto';
-import { UpdateProductMovementDto } from './dto/update-product_movement.dto';
+import { CreateProductMovementsDto } from './dto/create-product_movement.dto';
 import { CompanyGuard } from 'src/middleware/company.guard';
 
 @Controller('product-movement')
@@ -10,8 +9,8 @@ export class ProductMovementController {
 
   @UseGuards(CompanyGuard)
   @Post()
-  create(@Body() createProductMovementDto: CreateProductMovementDto) {
-    return this.productMovementService.create(createProductMovementDto);
+  create(@Body() createProductMovementDto: CreateProductMovementsDto) {
+    return this.productMovementService.createMovements(createProductMovementDto.movements);
   }
 
 }

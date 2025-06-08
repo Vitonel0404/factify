@@ -1,6 +1,7 @@
-import { IsInt, IsNumber, IsOptional, IsString, IsIn } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsInt, IsNumber, IsOptional, IsString, IsIn, IsArray, ValidateNested } from 'class-validator';
 
-export class CreateProductMovementDto {
+ export class CreateProductMovementDto {
   @IsInt()
   id_product: number;
 
@@ -19,4 +20,11 @@ export class CreateProductMovementDto {
   @IsOptional()
   @IsString()
   observation?: string;
+}
+
+export class CreateProductMovementsDto {
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateProductMovementDto)
+  movements: CreateProductMovementDto[];
 }

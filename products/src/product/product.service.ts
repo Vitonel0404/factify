@@ -1,4 +1,4 @@
-import { Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
@@ -68,33 +68,52 @@ export class ProductService {
     }
   }
 
-  async unitDiscount(id_product: number, unitsToDiscount: number) {
-    try {
-      const product = await this.productRepository.findOne({ where: { id_product } });
+  async discountProducts(products: { id_product: number; quantity: number }[]) {
+    const results: {
+      id_product: number;
+      status: 'ok' | 'error';
+      error?: string;
+    }[] = [];
 
-      if (!product) {
-        throw new NotFoundException(`Product with id ${id_product} not found`);
+    for (const product of products) {
+      try {
+        await this.unitDiscount(product.id_product, product.quantity);
+        results.push({ id_product: product.id_product, status: 'ok' });
+      } catch (error) {
+        results.push({
+          id_product: product.id_product,
+          status: 'error',
+          error: error?.message ?? 'Unknown error',
+        });
       }
-
-      product.stock = Number(product.stock);
-
-      if (product.stock < unitsToDiscount) {
-        throw new Error(`Insufficient stock. Available: ${product.stock}, requested: ${unitsToDiscount}`);
-      }
-
-      product.stock -= unitsToDiscount;
-
-      return await this.productRepository.save(product);
-    } catch (error) {
-      throw new InternalServerErrorException(error.message);
     }
+
+    return { summary: results };
+  }
+
+  async unitDiscount(id_product: number, unitsToDiscount: number) {
+    const product = await this.productRepository.findOne({ where: { id_product } });
+
+    if (!product) {
+      throw new NotFoundException(`Product with id ${id_product} not found`);
+    }
+
+    const availableStock = Number(product.stock);
+    if (availableStock < unitsToDiscount) {
+      throw new BadRequestException(
+        `Insufficient stock. Available: ${availableStock}, requested: ${unitsToDiscount}`
+      );
+    }
+
+    product.stock = availableStock - unitsToDiscount;
+    return this.productRepository.save(product);
   }
 
   async unitIncrease(id_product: number, unitsToIncrease: number) {
     try {
       const product = await this.productRepository.findOne({ where: { id_product } });
       console.log(product);
-      
+
       if (!product) {
         throw new NotFoundException(`Product with id ${id_product} not found`);
       }

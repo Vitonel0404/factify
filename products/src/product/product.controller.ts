@@ -3,6 +3,7 @@ import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { CompanyGuard } from 'src/middleware/company.guard';
+import { DiscountProductsDto } from './dto/discount-products';
 
 @Controller('product')
 export class ProductController {
@@ -39,9 +40,9 @@ export class ProductController {
   }
 
   @UseGuards(CompanyGuard)
-  @Get('discount/:id_product/:unitsToDiscount')
-  unitDiscount(@Param('id_product') id_product: string, @Param('unitsToDiscount') unitsToDiscount: string) {
-    return this.productService.unitDiscount(+id_product, +unitsToDiscount);
+  @Post('discount')
+  unitDiscount(@Body() discountProductsDto: DiscountProductsDto) {
+    return this.productService.discountProducts(discountProductsDto.products);
   }
 
   @UseGuards(CompanyGuard)
