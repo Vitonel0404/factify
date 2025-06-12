@@ -9,6 +9,19 @@ import { HttpService } from '@nestjs/axios';
 import { PurchaseDetailService } from 'src/purchase_detail/purchase_detail.service';
 import { firstValueFrom } from 'rxjs';
 
+type productsToIncrease = {
+  id_product: number;
+  quantity: number;
+};
+
+type productsToMovement = {
+  id_branch: number,
+  id_product: number,
+  quantity: number,
+  movement_type: string,
+  observation: string
+};
+
 @Injectable()
 export class PurchaseService {
   private readonly purchaseRepository: Repository<Purchase>
@@ -29,7 +42,7 @@ export class PurchaseService {
     createPurchaseDto.total = detail.reduce((sum: any, item: any) => sum + item.subtotal, 0);
 
     createPurchaseDto.igv = 10,
-    createPurchaseDto.igv_percent = 10
+      createPurchaseDto.igv_percent = 10
     createPurchaseDto.taxed_operation = 10;
     createPurchaseDto.series = 'F001'
     createPurchaseDto.number = 10;
@@ -37,27 +50,38 @@ export class PurchaseService {
     const newPurchase = this.purchaseRepository.create(createPurchaseDto);
     const savedPurchase = await this.purchaseRepository.save(newPurchase);
 
+    const productsToIncrease: productsToIncrease[] = [];
+    const movements: productsToMovement[] = []
+
     for (const item of detail) {
       item.id_purchase = savedPurchase.id_purchase;
       await this.purchaseDetailService.create(item);
-      await this.unitIncreaseExternal(+item.id_product, +item.quantity, tenancy)
-      await this.createProductMovementExternal({
-          id_branch: savedPurchase.id_branch,
-          id_product: +item.id_product, 
-          quantity: +item.quantity,
-          movement_type:'INGRESO',
-          observation: `COMPRA ${createPurchaseDto.series}-${createPurchaseDto.number}`
-        },
-        tenancy)
+
+      productsToIncrease.push({
+        id_product: +item.id_product,
+        quantity: +item.quantity,
+      });
+
+      movements.push({
+        id_branch: savedPurchase.id_branch,
+        id_product: +item.id_product,
+        quantity: +item.quantity,
+        movement_type: 'INGRESO',
+        observation: `VENTA ${createPurchaseDto.series}-${createPurchaseDto.number}`
+      })
     }
+
+    await this.unitIncreaseExternal(productsToIncrease, tenancy)
+    await this.createProductMovementExternal(movements, tenancy)
 
     return savedPurchase;
   }
 
-  async unitIncreaseExternal(id_product: number, unitsToIncrease: number, tenancy: string) {
+  async unitIncreaseExternal(products: productsToIncrease[], tenancy: string) {
     try {
       const response = await firstValueFrom(
-        this.httpService.get(`${this.configService.get<string>('URL_PRODUCTS_SERVICE')}/product/increase/${id_product}/${unitsToIncrease}`,
+        this.httpService.post(`${this.configService.get<string>('URL_PRODUCTS_SERVICE')}/product/increase`,
+          { products },
           {
             headers: {
               'x-tenant-id': tenancy,
@@ -72,10 +96,11 @@ export class PurchaseService {
     }
   }
 
-  async createProductMovementExternal(productMovement: any, tenancy: string) {
+  async createProductMovementExternal(movements: productsToMovement[], tenancy: string) {
     try {
       const response = await firstValueFrom(
-        this.httpService.post(`${this.configService.get<string>('URL_PRODUCTS_SERVICE')}/product-movement`, productMovement,
+        this.httpService.post(`${this.configService.get<string>('URL_PRODUCTS_SERVICE')}/product-movement`,
+          { movements },
           {
             headers: {
               'x-tenant-id': tenancy,

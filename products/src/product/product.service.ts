@@ -109,17 +109,36 @@ export class ProductService {
     return this.productRepository.save(product);
   }
 
+  async increaseProducts(products: { id_product: number; quantity: number }[]) {
+    const results: {
+      id_product: number;
+      status: 'ok' | 'error';
+      error?: string;
+    }[] = [];
+
+    for (const product of products) {
+      try {
+        await this.unitIncrease(product.id_product, product.quantity);
+        results.push({ id_product: product.id_product, status: 'ok' });
+      } catch (error) {
+        results.push({
+          id_product: product.id_product,
+          status: 'error',
+          error: error?.message ?? 'Unknown error',
+        });
+      }
+    }
+
+    return { summary: results };
+  }
+
   async unitIncrease(id_product: number, unitsToIncrease: number) {
     try {
       const product = await this.productRepository.findOne({ where: { id_product } });
-      console.log(product);
-
       if (!product) {
         throw new NotFoundException(`Product with id ${id_product} not found`);
       }
-
       product.stock = Number(product.stock) + Number(unitsToIncrease);
-
       return await this.productRepository.save(product);
     } catch (error) {
       throw new InternalServerErrorException(error.message);

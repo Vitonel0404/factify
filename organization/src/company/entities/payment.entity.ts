@@ -13,7 +13,7 @@ export class Payment {
   @Column()
   id_company_plan: number;
 
-  @Column('decimal', { precision: 10, scale: 2 })
+@Column({ type: 'decimal', precision: 10, scale: 2 })
   amount: number;
 
   @Column({ type: 'date' })

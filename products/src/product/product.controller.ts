@@ -4,6 +4,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { CompanyGuard } from 'src/middleware/company.guard';
 import { DiscountProductsDto } from './dto/discount-products';
+import { IncreaseProductsDto } from './dto/increase-products';
 
 @Controller('product')
 export class ProductController {
@@ -46,8 +47,8 @@ export class ProductController {
   }
 
   @UseGuards(CompanyGuard)
-  @Get('increase/:id_product/:unitsToIncrease')
-  unitIncrease(@Param('id_product') id_product: string, @Param('unitsToIncrease') unitsToIncrease: string) {
-    return this.productService.unitIncrease(+id_product, +unitsToIncrease);
+  @Post('increase')
+  unitIncrease(@Body() increaseProductsDto: IncreaseProductsDto) {
+    return this.productService.increaseProducts(increaseProductsDto.products);
   }
 }

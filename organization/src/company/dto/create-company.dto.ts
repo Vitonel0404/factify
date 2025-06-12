@@ -6,6 +6,8 @@ import {
   IsInt,
   Length,
   MaxLength,
+  IsPositive,
+  IsNumber,
 } from 'class-validator';
 
 export class CreateCompanyDto {
@@ -29,6 +31,10 @@ export class CreateCompanyDto {
   @IsString()
   @MaxLength(255)
   logo?: string;
+
+  @IsNumber()
+  @IsPositive()
+  igv: number;
 
   @IsOptional()
   @IsString()

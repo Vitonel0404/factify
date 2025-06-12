@@ -15,7 +15,7 @@ import { PaymentSaleModule } from './payment_sale/payment_sale.module';
     TenancyModule,
     SaleModule,
     SaleDetailModule,
-    PaymentSaleModule],
+    PaymentSaleModule,],
   controllers: [AppController],
   providers: [AppService],
 })

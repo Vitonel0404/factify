@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="lu4kezhYt4bd80oVu4W_" name="Page-1">
-        <mxGraphModel dx="2397" dy="911" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+        <mxGraphModel dx="1865" dy="572" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -18,7 +18,7 @@
                         <mxRectangle x="-790" y="80" width="80" height="50" as="alternateBounds"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="3" value="+id_company&lt;br&gt;+ruc&lt;br&gt;+legal_name&lt;div&gt;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;+email&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;+phone&lt;br&gt;&lt;/font&gt;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;+logo&lt;/span&gt;&lt;br&gt;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;+second_user_sunat&lt;/span&gt;&lt;/div&gt;&lt;div&gt;+second_password_sunat&lt;/div&gt;&lt;div&gt;+db_name&lt;/div&gt;&lt;div&gt;+is delinquent&lt;/div&gt;&lt;div&gt;+is_active&lt;/div&gt;&lt;div&gt;+created_at&lt;/div&gt;" style="align=left;strokeColor=none;fillColor=none;spacingLeft=4;fontSize=14;verticalAlign=top;resizable=0;rotatable=0;part=1;html=1;" parent="2" vertex="1">
+                <mxCell id="3" value="+id_company&lt;br&gt;+ruc&lt;br&gt;+legal_name&lt;div&gt;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;+email&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;+phone&lt;br&gt;&lt;/font&gt;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;+logo&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;+igv&lt;br&gt;&lt;/font&gt;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;+second_user_sunat&lt;/span&gt;&lt;/div&gt;&lt;div&gt;+second_password_sunat&lt;/div&gt;&lt;div&gt;+db_name&lt;/div&gt;&lt;div&gt;+is delinquent&lt;/div&gt;&lt;div&gt;+is_active&lt;/div&gt;&lt;div&gt;+created_at&lt;/div&gt;" style="align=left;strokeColor=none;fillColor=none;spacingLeft=4;fontSize=14;verticalAlign=top;resizable=0;rotatable=0;part=1;html=1;" parent="2" vertex="1">
                     <mxGeometry y="50" width="180" height="290" as="geometry"/>
                 </mxCell>
                 <mxCell id="4" value="Branch" style="swimlane;childLayout=stackLayout;horizontal=1;startSize=50;horizontalStack=0;rounded=1;fontSize=14;fontStyle=0;strokeWidth=2;resizeParent=0;resizeLast=1;shadow=0;dashed=0;align=center;arcSize=4;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
@@ -608,12 +608,6 @@
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="-440" y="600" as="targetPoint"/>
                     </mxGeometry>
-                </mxCell>
-                <mxCell id="177" value="Params" style="swimlane;childLayout=stackLayout;horizontal=1;startSize=50;horizontalStack=0;rounded=1;fontSize=14;fontStyle=0;strokeWidth=2;resizeParent=0;resizeLast=1;shadow=0;dashed=0;align=center;arcSize=4;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
-                    <mxGeometry x="1470" y="510" width="140" height="150" as="geometry"/>
-                </mxCell>
-                <mxCell id="178" value="+id_param&lt;br&gt;+description&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;+value&lt;br&gt;&lt;/font&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;+is_active&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;&lt;div style=&quot;color: rgb(63, 63, 63);&quot;&gt;+is_eliminated&lt;/div&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;&lt;/span&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;+create_at&lt;/font&gt;&lt;/div&gt;&lt;/div&gt;" style="align=left;strokeColor=none;fillColor=none;spacingLeft=4;fontSize=12;verticalAlign=top;resizable=0;rotatable=0;part=1;html=1;" vertex="1" parent="177">
-                    <mxGeometry y="50" width="140" height="100" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>

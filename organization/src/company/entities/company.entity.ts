@@ -20,6 +20,9 @@ export class Company {
   @Column({ type: 'varchar', length: 255, nullable: true })
   logo: string;
 
+  @Column({ type: 'decimal', precision: 4, scale: 2 })
+  igv: number;
+
   @Column({ type: 'varchar', length: 100, nullable: true })
   second_user_sunat: string;
 
