@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="lu4kezhYt4bd80oVu4W_" name="Page-1">
-        <mxGraphModel dx="1482" dy="487" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+        <mxGraphModel dx="1777" dy="552" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -55,7 +55,7 @@
                 <mxCell id="18" value="Customer" style="swimlane;childLayout=stackLayout;horizontal=1;startSize=39;horizontalStack=0;rounded=1;fontSize=14;fontStyle=0;strokeWidth=2;resizeParent=0;resizeLast=1;shadow=0;dashed=0;align=center;arcSize=4;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
                     <mxGeometry x="-800" y="570" width="130" height="201" as="geometry"/>
                 </mxCell>
-                <mxCell id="19" value="+id_customer&lt;div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;+id_document_type&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;+document_numer&lt;br&gt;&lt;/font&gt;+full_name&lt;br&gt;+address&lt;div&gt;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;+phone&lt;/span&gt;&lt;br&gt;&lt;font color=&quot;#000000&quot;&gt;+email&lt;/font&gt;&lt;br&gt;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;+is_active&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;+is_eliminated&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;+created_at&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;" style="align=left;strokeColor=none;fillColor=none;spacingLeft=4;fontSize=12;verticalAlign=top;resizable=0;rotatable=0;part=1;html=1;" parent="18" vertex="1">
+                <mxCell id="19" value="+id_customer&lt;div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;+id_document_type&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;+document_number&lt;br&gt;&lt;/font&gt;+full_name&lt;br&gt;+address&lt;div&gt;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;+phone&lt;/span&gt;&lt;br&gt;&lt;font color=&quot;#000000&quot;&gt;+email&lt;/font&gt;&lt;br&gt;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;+is_active&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;+is_eliminated&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;+created_at&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;" style="align=left;strokeColor=none;fillColor=none;spacingLeft=4;fontSize=12;verticalAlign=top;resizable=0;rotatable=0;part=1;html=1;" parent="18" vertex="1">
                     <mxGeometry y="39" width="130" height="162" as="geometry"/>
                 </mxCell>
                 <mxCell id="23" value="" style="edgeStyle=none;html=1;" parent="1" source="21" target="19" edge="1">

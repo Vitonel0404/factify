@@ -1,4 +1,4 @@
-import { IsInt, IsOptional, IsString } from "class-validator";
+import { IsBoolean, IsInt, IsOptional, IsString } from "class-validator";
 
 export class CreateSupplierDto {
   @IsInt()
@@ -28,4 +28,8 @@ export class CreateSupplierDto {
   @IsOptional()
   @IsString()
   address?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  is_active?: boolean;
 }
