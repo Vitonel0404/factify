@@ -1,4 +1,4 @@
-import { IsInt, IsOptional, IsString } from "class-validator";
+import { IsBoolean, IsInt, IsOptional, IsString } from "class-validator";
 
 export class CreateCorrelativeDto {
     @IsInt()
@@ -16,4 +16,8 @@ export class CreateCorrelativeDto {
 
     @IsInt()
     maximun_correlative: number;
+
+    @IsOptional()
+    @IsBoolean()
+    is_active?: boolean;
 }

@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, UseGuards, Req, BadRequestException } from '@nestjs/common';
 import { CorrelativeService } from './correlative.service';
 import { CreateCorrelativeDto } from './dto/create-correlative.dto';
 import { UpdateCorrelativeDto } from './dto/update-correlative.dto';
 import { CompanyGuard } from 'src/middleware/company.guard';
+import { Request } from 'express';
 
 @Controller('correlative')
 export class CorrelativeController {
@@ -16,8 +17,9 @@ export class CorrelativeController {
 
   @UseGuards(CompanyGuard)
   @Get()
-  findAll() {
-    return this.correlativeService.findAll();
+  findAll(@Req() req: Request) {
+    const branch = req.headers.branch as string;
+    return this.correlativeService.findAll(+branch);
   }
 
   @UseGuards(CompanyGuard)

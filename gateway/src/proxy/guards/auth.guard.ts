@@ -20,6 +20,7 @@ export class AuthGuard implements CanActivate {
             const user = await this.jwtService.verifyAsync(token, {secret});
             request.user = user;
             request.headers['x-tenant-id'] = user.tenant;
+            request.headers['branch'] = user.id_branch;
             return true;
         } catch (error) {
             throw new ForbiddenException('Invalid token');

@@ -24,11 +24,28 @@ export class CorrelativeService {
     }
   }
 
-  async findAll() {
+  async findAll(id_branch : number) {
     try {
-      return await this.correlativeRepository.find({
-        where: { is_eliminated: false }
-      });
+      // const rest =  await this.correlativeRepository.find({
+      //   where: { is_eliminated: false }
+      // });
+
+      const result = await this.correlativeRepository
+      .createQueryBuilder('correlative')
+      .innerJoin('voucher_type', 'vt', 'vt.id_voucher_type = correlative.id_voucher_type')
+      .select([
+        'correlative.id_correlative AS id_correlative',
+        'correlative.id_branch AS id_branch ',
+        'correlative.id_voucher_type AS id_voucher_type',
+        'vt.description AS description',
+        'correlative.series AS series',
+        'correlative.last_number AS last_number',
+        'correlative.maximun_correlative AS maximun_correlative',
+        'correlative.is_active AS is_active'
+      ])
+      .where('correlative.is_eliminated = :elim and correlative.id_branch = :branch', { elim: false, branch: id_branch })
+      .getRawMany();      
+      return result
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
