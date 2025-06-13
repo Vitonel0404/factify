@@ -15,9 +15,9 @@ export class ProxyService {
     const headers = this.prepareHeaders(req.headers, baseUrl, hasBody);
     
 
-    console.log(`[Proxy] Forwarding ${method.toUpperCase()} ${req.originalUrl} -> ${url}`);
-    console.log('[Proxy] Headers:', headers);
-    console.log('[Proxy] Body:', req.body);
+    // console.log(`[Proxy] Forwarding ${method.toUpperCase()} ${req.originalUrl} -> ${url}`);
+    // console.log('[Proxy] Headers:', headers);
+    // console.log('[Proxy] Body:', req.body);
 
     try {
       const response$ = this.httpService.request({
@@ -53,7 +53,6 @@ export class ProxyService {
 
   private prepareHeaders( originalHeaders: Record<string, any>, baseUrl: string, hasBody: boolean ): Record<string, string> {
     const headers: Record<string, string> = {};
-    
     // Copiar headers válidos
     for (const key in originalHeaders) {
       if (this.shouldForwardHeader(key)) {

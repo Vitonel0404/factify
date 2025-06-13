@@ -2,6 +2,7 @@ import { Controller, All, UseGuards, Req, Res } from '@nestjs/common';
 import { ProxyService } from './proxy.service';
 import { AuthAdminGuard } from './guards/auth-admin.guard';
 import { Request, Response } from 'express';
+import { AuthGuard } from './guards/auth.guard';
 
 @Controller('proxy')
 export class ProxyController {
@@ -9,12 +10,9 @@ export class ProxyController {
 
   @All('auth/*')
   async proxyToAuth(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
-    console.log('Request URL:', req.url);
-    console.log('Request Method:', req.method);
-    console.log('Request Body:', req.body);
     const cleanedUrl = req.originalUrl.replace(/^\/proxy\/auth/, '');
     req.url = cleanedUrl;
-    await this.proxyService.forwardRequest(req, res, 'http://authenticated:3000');
+    await this.proxyService.forwardRequest(req, res, 'http://localhost:3001');
   }
 
   @All('org/*')
@@ -22,31 +20,31 @@ export class ProxyController {
   async proxyToOrg(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     const cleanedUrl = req.originalUrl.replace(/^\/proxy\/org/, '');
     req.url = cleanedUrl;
-    await this.proxyService.forwardRequest(req, res, 'http://organization:3000');
+    await this.proxyService.forwardRequest(req, res, 'http://localhost:3002');
   }
 
   @All('manage/*')
-  @UseGuards(AuthAdminGuard)
+  @UseGuards(AuthGuard)
   async proxyToManagement(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     const cleanedUrl = req.originalUrl.replace(/^\/proxy\/manage/, '');
-    req.url = cleanedUrl;
-    await this.proxyService.forwardRequest(req, res, 'http://management:3000');
+    req.url = cleanedUrl;   
+    await this.proxyService.forwardRequest(req, res, 'http://localhost:3003');
   }
 
   @All('products/*')
-  @UseGuards(AuthAdminGuard)
+  @UseGuards(AuthGuard)
   async proxyToProducts(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     const cleanedUrl = req.originalUrl.replace(/^\/proxy\/products/, '');
     req.url = cleanedUrl;
-    await this.proxyService.forwardRequest(req, res, 'http://products:3000');
+    await this.proxyService.forwardRequest(req, res, 'http://localhost:3004');
   }
 
   @All('sales/*')
-  @UseGuards(AuthAdminGuard)
+  @UseGuards(AuthGuard)
   async proxyToSales(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     const cleanedUrl = req.originalUrl.replace(/^\/proxy\/sales/, '');
     req.url = cleanedUrl;
-    await this.proxyService.forwardRequest(req, res, 'http://sales:3000');
+    await this.proxyService.forwardRequest(req, res, 'http://localhost:3005');
   }
 
 }
