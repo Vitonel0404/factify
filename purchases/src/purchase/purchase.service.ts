@@ -115,8 +115,33 @@ export class PurchaseService {
     }
   }
 
-  findAll() {
-    return `This action returns all purchase`;
+  async findAll(id_branch: number) {
+    try {
+      const result = await this.purchaseRepository
+        .createQueryBuilder('purchase')
+        .innerJoin('voucher_type', 'vt', 'vt.id_voucher_type = purchase.id_voucher_type')
+        .innerJoin('supplier', 's', 's.id_supplier = purchase.id_supplier')
+        .select([
+          'purchase.id_purchase AS id_purchase',
+          'purchase.id_purchase AS id_voucher_type',
+          'vt.description AS voucher_type',
+          's.trade_name AS supplier',
+          'purchase.series AS series',
+          'purchase.number AS number',
+          'purchase.date AS date',
+          'purchase.total AS total',
+          'purchase.is_active AS is_active',
+          'purchase.id_purchase_order AS id_purchase_order'
+        ])
+        .where('purchase.id_branch = :branch', { branch: id_branch })
+        .getRawMany();
+        
+      return result
+
+    } catch (error) {
+      console.error('Error en listar ventas:', error?.response?.data || error.message);
+      throw new InternalServerErrorException('Error en listar ventas');
+    }
   }
 
   findOne(id: number) {

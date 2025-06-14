@@ -47,4 +47,12 @@ export class ProxyController {
     await this.proxyService.forwardRequest(req, res, 'http://localhost:3005');
   }
 
+  @All('purchases/*')
+  @UseGuards(AuthGuard)
+  async proxyToPurchase(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    const cleanedUrl = req.originalUrl.replace(/^\/proxy\/purchases/, '');
+    req.url = cleanedUrl;
+    await this.proxyService.forwardRequest(req, res, 'http://localhost:3006');
+  }
+
 }

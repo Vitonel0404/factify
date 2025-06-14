@@ -12,15 +12,15 @@ export class PurchaseDetailController {
     return this.purchaseDetailService.create(createPurchaseDetailDto);
   }
 
-  @Get()
-  findAll() {
-    return this.purchaseDetailService.findAll();
+  @Get(':id')
+  findAll(@Param('id') id: string) {
+    return this.purchaseDetailService.findAll(+id);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.purchaseDetailService.findOne(+id);
-  }
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.purchaseDetailService.findOne(+id);
+  // }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updatePurchaseDetailDto: UpdatePurchaseDetailDto) {

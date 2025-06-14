@@ -12,17 +12,16 @@ export class PurchaseController {
   @UseGuards(CompanyGuard)
   @Post()
   create(@Req() req: Request, @Body() createPurchaseDto: CreatePurchaseDto) {
-
     const tenancy = Array.isArray(req.headers['x-tenant-id'])
     ? req.headers['x-tenant-id'][0]
     : req.headers['x-tenant-id'] || '';
-
     return this.purchaseService.create(createPurchaseDto, tenancy);
   }
 
   @Get()
-  findAll() {
-    return this.purchaseService.findAll();
+  findAll(@Req() req: Request) {
+    const branch = req.headers.branch as string;
+    return this.purchaseService.findAll(+branch);
   }
 
   @Get(':id')
