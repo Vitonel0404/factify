@@ -40,4 +40,36 @@ export class ProductMovementService {
     const new_movement = this.productMovementRepository.create(createProductMovementDto);
     return this.productMovementRepository.save(new_movement);
   }
+
+  async findAll(id_branch: number) {
+    try {
+      const result = this.productMovementRepository
+        .createQueryBuilder('product_movement')
+        .innerJoin('product', 'p', 'p.id_product = product_movement.id_product')
+        .select([
+          'product_movement.id_movement AS id_movement',
+          'product_movement.id_product AS id_product ',
+          'p.description AS product',
+          'product_movement.movement_type AS movement_type',
+          'product_movement.quantity AS quantity',
+          'product_movement.observation AS observation',
+          'product_movement.created_at AS created_at'
+        ])
+        .where('product_movement.id_branch = :branch', { branch: id_branch })
+        .getRawMany();
+
+      return result
+
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  findOne(id_movement: number) {
+    try {
+      return this.productMovementRepository.findOneBy({ id_movement });
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
 }
