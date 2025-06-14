@@ -12,7 +12,7 @@ export class Quotation {
   id_customer: number;
 
   @Column({ length: 50 })
-  order_quotation: string;
+  quotation_number: string;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   date: Date;

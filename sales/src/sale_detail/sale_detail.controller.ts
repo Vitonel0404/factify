@@ -12,15 +12,15 @@ export class SaleDetailController {
     return this.saleDetailService.create(createSaleDetailDto);
   }
 
-  @Get()
-  findAll() {
-    return this.saleDetailService.findAll();
+  @Get(':id')
+  findAll(@Param('id') id: string) {
+    return this.saleDetailService.findAll(+id);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.saleDetailService.findOne(+id);
-  }
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.saleDetailService.findOne(+id);
+  // }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateSaleDetailDto: UpdateSaleDetailDto) {

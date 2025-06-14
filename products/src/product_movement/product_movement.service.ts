@@ -43,7 +43,7 @@ export class ProductMovementService {
 
   async findAll(id_branch: number) {
     try {
-      const result = this.productMovementRepository
+      const result = await this.productMovementRepository
         .createQueryBuilder('product_movement')
         .innerJoin('product', 'p', 'p.id_product = product_movement.id_product')
         .select([

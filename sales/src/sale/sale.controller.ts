@@ -12,17 +12,16 @@ export class SaleController {
   @UseGuards(CompanyGuard)
   @Post()
   create(@Req() req: Request, @Body() createSaleDto: CreateSaleDto) {
-
     const tenancy = Array.isArray(req.headers['x-tenant-id'])
     ? req.headers['x-tenant-id'][0]
     : req.headers['x-tenant-id'] || '';
-
     return this.saleService.create(createSaleDto,tenancy);
   }
 
   @Get()
-  findAll() {
-    return this.saleService.findAll();
+  findAll(@Req() req: Request) {
+    const branch = req.headers.branch as string;
+    return this.saleService.findAll(+branch);
   }
 
   @Get(':id')

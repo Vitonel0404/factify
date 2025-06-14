@@ -24,7 +24,7 @@ export class ProductService {
 
   async findAll(id_branch : number) {
     try {
-      const result = this.productRepository
+      const result = await this.productRepository
       .createQueryBuilder('product')
       .innerJoin('category', 'cat', 'cat.id_category = product.id_category')
       .innerJoin('measure', 'ms', 'ms.id_measure = product.id_measure')
