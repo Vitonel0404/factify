@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, UseGuards, Req, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, UseGuards, Req } from '@nestjs/common';
 import { CorrelativeService } from './correlative.service';
 import { CreateCorrelativeDto } from './dto/create-correlative.dto';
 import { UpdateCorrelativeDto } from './dto/update-correlative.dto';

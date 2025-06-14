@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, UseGuards, Req } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { CompanyGuard } from 'src/middleware/company.guard';
+import { Request } from 'express';
 
 @Controller('category')
 export class CategoryController {
@@ -16,8 +17,9 @@ export class CategoryController {
 
   @UseGuards(CompanyGuard)
   @Get()
-  findAll() {
-    return this.categoryService.findAll();
+  findAll(@Req() req: Request) {
+    const branch = req.headers.branch as string;
+    return this.categoryService.findAll(+branch);
   }
 
   @UseGuards(CompanyGuard)

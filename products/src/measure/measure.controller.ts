@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, UseGuards, Req } from '@nestjs/common';
 import { MeasureService } from './measure.service';
 import { CreateMeasureDto } from './dto/create-measure.dto';
 import { UpdateMeasureDto } from './dto/update-measure.dto';
 import { CompanyGuard } from 'src/middleware/company.guard';
+import { Request } from 'express';
 
 @Controller('measure')
 export class MeasureController {
@@ -16,8 +17,9 @@ export class MeasureController {
 
   @UseGuards(CompanyGuard)
   @Get()
-  findAll() {
-    return this.measureService.findAll();
+  findAll(@Req() req: Request) {
+    const branch = req.headers.branch as string;
+    return this.measureService.findAll(+branch);
   }
 
   @UseGuards(CompanyGuard)

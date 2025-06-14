@@ -22,11 +22,30 @@ export class ProductService {
     }
   }
 
-  async findAll() {
+  async findAll(id_branch : number) {
     try {
-      return await this.productRepository.find({
-        where: { is_eliminated: false }
-      });
+      const result = this.productRepository
+      .createQueryBuilder('product')
+      .innerJoin('category', 'cat', 'cat.id_category = product.id_category')
+      .innerJoin('measure', 'ms', 'ms.id_measure = product.id_measure')
+      .select([
+        'product.id_product AS id_product',
+        'product.id_branch AS id_branch ',
+        'product.id_category AS id_category',
+        'product.id_measure AS id_measure',
+        'cat.description AS category',
+        'ms.description AS measure',
+        'product.description AS description',
+        'product.price AS price',
+        'product.stock AS stock',
+        'product.minimum_stock AS minimum_stock',
+        'product.is_active AS is_active'
+      ])
+      .where('product.is_eliminated = :elim and product.id_branch = :branch', { elim: false, branch: id_branch })
+      .getRawMany();
+
+      return result
+
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }

@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, UseGuards, Req } from '@nestjs/common';
 import { SupplierService } from './supplier.service';
 import { CreateSupplierDto } from './dto/create-supplier.dto';
 import { UpdateSupplierDto } from './dto/update-supplier.dto';
 import { CompanyGuard } from 'src/middleware/company.guard';
+import { Request } from 'express';
 
 @Controller('supplier')
 export class SupplierController {
@@ -16,8 +17,9 @@ export class SupplierController {
 
   @UseGuards(CompanyGuard)
   @Get()
-  findAll() {
-    return this.supplierService.findAll();
+  findAll(@Req() req: Request) {
+    const branch = req.headers.branch as string;
+    return this.supplierService.findAll(+branch);
   }
 
   @UseGuards(CompanyGuard)

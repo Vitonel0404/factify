@@ -26,10 +26,6 @@ export class CorrelativeService {
 
   async findAll(id_branch : number) {
     try {
-      // const rest =  await this.correlativeRepository.find({
-      //   where: { is_eliminated: false }
-      // });
-
       const result = await this.correlativeRepository
       .createQueryBuilder('correlative')
       .innerJoin('voucher_type', 'vt', 'vt.id_voucher_type = correlative.id_voucher_type')

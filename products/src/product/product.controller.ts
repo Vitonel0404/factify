@@ -1,10 +1,11 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, UseGuards, Req } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { CompanyGuard } from 'src/middleware/company.guard';
 import { DiscountProductsDto } from './dto/discount-products';
 import { IncreaseProductsDto } from './dto/increase-products';
+import { Request } from 'express';
 
 @Controller('product')
 export class ProductController {
@@ -18,8 +19,9 @@ export class ProductController {
 
   @UseGuards(CompanyGuard)
   @Get()
-  findAll() {
-    return this.productService.findAll();
+  findAll(@Req() req: Request) {
+    const branch = req.headers.branch as string;
+    return this.productService.findAll(+branch);
   }
 
   @UseGuards(CompanyGuard)

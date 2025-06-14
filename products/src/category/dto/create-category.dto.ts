@@ -1,4 +1,4 @@
-import { IsInt, IsString } from "class-validator";
+import { IsBoolean, IsInt, IsOptional, IsString } from "class-validator";
 
 export class CreateCategoryDto {
     @IsInt()
@@ -6,4 +6,8 @@ export class CreateCategoryDto {
 
     @IsString()
     description: string;
+
+    @IsOptional()
+    @IsBoolean()
+    is_active?: boolean;
 }

@@ -6,4 +6,8 @@ export class CreateMeasureDto {
 
   @IsString()
   description: string;
+
+  @IsOptional()
+  @IsBoolean()
+  is_active?: boolean;
 }

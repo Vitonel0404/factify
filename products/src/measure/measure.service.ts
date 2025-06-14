@@ -22,10 +22,10 @@ export class MeasureService {
     }
   }
 
-  async findAll() {
+  async findAll(id_branch : number) {
     try {
       return await this.measureRepository.find({
-        where: { is_eliminated: false }
+        where: { is_eliminated: false, id_branch }
       });
     } catch (error) {
       throw new InternalServerErrorException(error.message);

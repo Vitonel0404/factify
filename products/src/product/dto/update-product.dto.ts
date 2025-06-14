@@ -2,9 +2,6 @@ import { IsBoolean, IsInt, IsNumber, IsOptional, IsPositive, IsString } from 'cl
 
 export class UpdateProductDto {
     @IsInt()
-    id_branch: number;
-
-    @IsInt()
     id_category: number;
 
     @IsInt()
