@@ -41,6 +41,14 @@ export class CustomerService {
     }
   }
 
+  findOneByDocument(document_number: string) {
+    try {
+      return this.customerRepository.findOneBy({ document_number });
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
   async update(id_customer: number, updateCustomerDto: UpdateCustomerDto) {
     try {
       const customer = await this.customerRepository.findOne({ where: { id_customer } });

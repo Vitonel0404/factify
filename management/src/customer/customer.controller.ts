@@ -29,6 +29,12 @@ export class CustomerController {
   }
 
   @UseGuards(CompanyGuard)
+  @Get('document/:document')
+  findOneByDocument(@Param('document') document: string) {
+    return this.customerService.findOneByDocument(document);
+  }
+
+  @UseGuards(CompanyGuard)
   @Put(':id')
   update(@Param('id') id: string, @Body() updateCustomerDto: UpdateCustomerDto) {
     return this.customerService.update(+id, updateCustomerDto);
