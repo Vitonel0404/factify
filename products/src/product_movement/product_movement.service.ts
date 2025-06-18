@@ -56,6 +56,7 @@ export class ProductMovementService {
           'product_movement.created_at AS created_at'
         ])
         .where('product_movement.id_branch = :branch', { branch: id_branch })
+        .orderBy('product_movement.created_at', 'DESC')
         .getRawMany();
 
       return result

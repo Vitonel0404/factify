@@ -167,6 +167,7 @@ export class SaleService {
           'sale.id_quotation AS id_quotation'
         ])
         .where('sale.id_branch = :branch', { branch: id_branch })
+        .orderBy('sale.date','DESC')
         .getRawMany();
 
       return result

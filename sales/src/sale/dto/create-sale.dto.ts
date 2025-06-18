@@ -13,8 +13,9 @@ export class CreateSaleDto {
   @IsInt()
   id_customer: number;
 
+  @IsOptional()
   @IsDateString()
-  date: Date;
+  date?: Date;
 
   @IsOptional()
   @IsString()
