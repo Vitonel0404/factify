@@ -24,23 +24,23 @@ export class CorrelativeService {
     }
   }
 
-  async findAll(id_branch : number) {
+  async findAll(id_branch: number) {
     try {
       const result = await this.correlativeRepository
-      .createQueryBuilder('correlative')
-      .innerJoin('voucher_type', 'vt', 'vt.id_voucher_type = correlative.id_voucher_type')
-      .select([
-        'correlative.id_correlative AS id_correlative',
-        'correlative.id_branch AS id_branch ',
-        'correlative.id_voucher_type AS id_voucher_type',
-        'vt.description AS description',
-        'correlative.series AS series',
-        'correlative.last_number AS last_number',
-        'correlative.maximun_correlative AS maximun_correlative',
-        'correlative.is_active AS is_active'
-      ])
-      .where('correlative.is_eliminated = :elim and correlative.id_branch = :branch', { elim: false, branch: id_branch })
-      .getRawMany();      
+        .createQueryBuilder('correlative')
+        .innerJoin('voucher_type', 'vt', 'vt.id_voucher_type = correlative.id_voucher_type')
+        .select([
+          'correlative.id_correlative AS id_correlative',
+          'correlative.id_branch AS id_branch ',
+          'correlative.id_voucher_type AS id_voucher_type',
+          'vt.description AS description',
+          'correlative.series AS series',
+          'correlative.last_number AS last_number',
+          'correlative.maximun_correlative AS maximun_correlative',
+          'correlative.is_active AS is_active'
+        ])
+        .where('correlative.is_eliminated = :elim and correlative.id_branch = :branch', { elim: false, branch: id_branch })
+        .getRawMany();
       return result
     } catch (error) {
       throw new InternalServerErrorException(error.message);
@@ -57,10 +57,31 @@ export class CorrelativeService {
 
   findOneByVoucher(id_branch: number, id_voucher_type: number) {
     try {
-      return this.correlativeRepository.findOneBy({ id_branch, id_voucher_type, is_active : true, is_eliminated : false });
+      return this.correlativeRepository.findOneBy({ id_branch, id_voucher_type, is_active: true, is_eliminated: false });
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
+  }
+
+  async increaseCorrelative(id_correlative: number) {
+    try {
+      const correlative = await this.correlativeRepository.findOne({
+        where: { id_correlative },
+      });
+
+      if (!correlative) {
+        throw new NotFoundException('Not found correlative');
+      }
+
+      correlative.last_number += 1;
+
+      await this.correlativeRepository.save(correlative);
+
+      return correlative;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+
   }
 
   async update(id_correlative: number, updateCorrelativeDto: UpdateCorrelativeDto) {

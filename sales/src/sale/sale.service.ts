@@ -86,7 +86,7 @@ export class SaleService {
 
     await this.unitDiscountExternal(productsToDiscount, tenancy);
     await this.createProductMovementExternal(movements, tenancy);
-
+    await this.increaseVoucherNumerExternal(correlative.id_correlative, tenancy);
 
     return savedSale;
   }
@@ -95,6 +95,24 @@ export class SaleService {
     try {
       const response = await firstValueFrom(
         this.httpService.get(`${this.configService.get<string>('URL_MANAGEMENT_SERVICE')}/correlative/voucher/${id_branch}/${id_voucher}`,
+          {
+            headers: {
+              'x-tenant-id': tenancy,
+            },
+          }
+        )
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error en getVoucherNumerExternal:', error?.response?.data || error.message);
+      throw new InternalServerErrorException('Error al enviar datos al servicio externo de otención de correlativos');
+    }
+  }
+
+  async increaseVoucherNumerExternal(id_correlative: number, tenancy: string) {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.get(`${this.configService.get<string>('URL_MANAGEMENT_SERVICE')}/correlative/increase/${id_correlative}`,
           {
             headers: {
               'x-tenant-id': tenancy,

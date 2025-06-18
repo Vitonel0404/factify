@@ -35,6 +35,12 @@ export class CorrelativeController {
   }
 
   @UseGuards(CompanyGuard)
+  @Get('increase/:id')
+  increaseCorrelative(@Param('id') id: string) {
+    return this.correlativeService.increaseCorrelative(+id);
+  }
+
+  @UseGuards(CompanyGuard)
   @Put(':id')
   update(@Param('id') id: string, @Body() updateCorrelativeDto: UpdateCorrelativeDto) {
     return this.correlativeService.update(+id, updateCorrelativeDto);
