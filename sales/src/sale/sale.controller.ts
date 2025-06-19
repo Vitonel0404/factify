@@ -18,6 +18,7 @@ export class SaleController {
     return this.saleService.create(createSaleDto,tenancy);
   }
 
+  @UseGuards(CompanyGuard)
   @Get()
   findAll(@Req() req: Request) {
     const branch = req.headers.branch as string;

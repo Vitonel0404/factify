@@ -8,7 +8,7 @@ export class Quotation {
   @Column({ type: 'int' })
   id_branch: number;
 
-  @Column()
+  @Column({ type: 'int' })
   id_customer: number;
 
   @Column({ type: 'int' })
