@@ -19,21 +19,25 @@ export class CreatePurchaseDto {
     @IsPositive()
     number: number;
 
+    @IsOptional()
     @IsDateString()
-    date: Date;
+    date?: Date;
 
     @IsNumber()
     @IsPositive()
     total: number;
 
+    @IsOptional()
     @IsNumber()
     @IsPositive()
     taxed_operation: number;
 
+    @IsOptional()
     @IsNumber()
     @IsPositive()
     igv_percent: number;
 
+    @IsOptional()
     @IsNumber()
     @IsPositive()
     igv: number;

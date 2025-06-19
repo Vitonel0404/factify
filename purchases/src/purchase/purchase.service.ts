@@ -42,10 +42,10 @@ export class PurchaseService {
     createPurchaseDto.total = detail.reduce((sum: any, item: any) => sum + item.subtotal, 0);
 
     createPurchaseDto.igv = 10,
-      createPurchaseDto.igv_percent = 10
+    createPurchaseDto.igv_percent = 10
     createPurchaseDto.taxed_operation = 10;
-    createPurchaseDto.series = 'F001'
-    createPurchaseDto.number = 10;
+    // createPurchaseDto.series = 'F001'
+    // createPurchaseDto.number = 10;
 
     const newPurchase = this.purchaseRepository.create(createPurchaseDto);
     const savedPurchase = await this.purchaseRepository.save(newPurchase);
@@ -67,7 +67,7 @@ export class PurchaseService {
         id_product: +item.id_product,
         quantity: +item.quantity,
         movement_type: 'INGRESO',
-        observation: `VENTA ${createPurchaseDto.series}-${createPurchaseDto.number}`
+        observation: `COMPRA ${createPurchaseDto.series}-${createPurchaseDto.number}`
       })
     }
 
