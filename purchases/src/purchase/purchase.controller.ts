@@ -18,6 +18,7 @@ export class PurchaseController {
     return this.purchaseService.create(createPurchaseDto, tenancy);
   }
 
+  @UseGuards(CompanyGuard)
   @Get()
   findAll(@Req() req: Request) {
     const branch = req.headers.branch as string;
