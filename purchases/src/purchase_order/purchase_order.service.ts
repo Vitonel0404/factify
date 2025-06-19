@@ -45,7 +45,7 @@ export class PurchaseOrderService {
       order: { id_purchase_order: 'DESC' }
     });
     if (!purchase_order) return 1
-    return purchase_order.id_purchase_order + 1
+    return purchase_order.order_number + 1
   }
 
   async findAll(id_branch: number) {
