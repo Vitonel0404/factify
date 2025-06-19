@@ -38,11 +38,12 @@ export class AuthService {
       'user.email AS email',
       'branch.id_branch AS id_branch',
       'company.db_name AS db_name',
+      'company.igv AS igv_value',
     ])
     .where('user.user_name = :user_name', { user_name })
     .getRawOne();
 
-    console.log(user);
+
     
     if (!user) throw new BadRequestException('Usuario no encontrado');
 
@@ -65,11 +66,12 @@ export class AuthService {
       name: user.name, 
       last_name: user.last_name, 
       user_name : user.user_name, 
-      email: user.email
+      email: user.email,
+      igv_value: user.igv_value
     }
 
     const token = await this.jwtService.signAsync(payload);
-    
+    console.log(_user);
     return {token, user : _user};
     } catch (error) {
       console.log(error);

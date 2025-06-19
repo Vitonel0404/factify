@@ -48,7 +48,6 @@ export class SaleService {
 
     if (correlative === '') throw new ConflictException('No existe un correlativo vigente.');
 
-    // createSaleDto.igv = 10,
     createSaleDto.igv_percent = createSaleDto.total / (1 + (createSaleDto.igv / 100))
     createSaleDto.taxed_operation = createSaleDto.total - createSaleDto.igv_percent;
     createSaleDto.series = correlative.series
