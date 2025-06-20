@@ -26,6 +26,7 @@ export class SaleDetailService {
         .innerJoin('measure', 'mea', 'mea.id_measure = p.id_measure')
         .select([
           'sale_detail.id_sale_detail AS id_sale_detail',
+          'sale_detail.id_product AS id_product',
           'p.description AS product',
           'mea.description AS measure',
           'sale_detail.price AS price',

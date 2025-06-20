@@ -1,4 +1,4 @@
-import { ConflictException, Inject, Injectable, InternalServerErrorException, Type } from '@nestjs/common';
+import { ConflictException, Inject, Injectable, InternalServerErrorException, NotFoundException, Type } from '@nestjs/common';
 import { CreateSaleDto } from './dto/create-sale.dto';
 import { UpdateSaleDto } from './dto/update-sale.dto';
 import { Sale } from './entities/sale.entity';
@@ -11,6 +11,11 @@ import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 
 type productsToDiscount = {
+  id_product: number;
+  quantity: number;
+};
+
+type productsToIncrease = {
   id_product: number;
   quantity: number;
 };
@@ -184,7 +189,7 @@ export class SaleService {
           'sale.id_quotation AS id_quotation'
         ])
         .where('sale.id_branch = :branch', { branch: id_branch })
-        .orderBy('sale.date','DESC')
+        .orderBy('sale.date', 'DESC')
         .getRawMany();
 
       return result
@@ -203,7 +208,62 @@ export class SaleService {
     return `This action updates a #${id} sale`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} sale`;
+  async remove(id_sale: number, data: { user_name: string, reason: string, is_return: boolean }, tenancy: string) {
+    const result = await this.saleRepository.update(
+      { id_sale: id_sale },
+      {
+        is_active: false,
+        reason_cancellation: data.reason,
+        user_name: data.user_name
+      },
+    )
+
+    if (result.affected === 0) throw new NotFoundException(`Sale with id ${id_sale} not found`);
+    const updatedSale = await this.saleRepository.findOne({ where: { id_sale } });
+
+    if (data.is_return) {
+      const detail = await this.saleDetailService.findAll(id_sale);
+      const movements: productsToMovement[] = []
+      const productsToIncrease: productsToIncrease[] = [];
+
+      for (const item of detail) {
+        movements.push({
+          id_branch: updatedSale?.id_branch || 0,
+          id_product: +item.id_product,
+          quantity: +item.quantity,
+          movement_type: "INGRESO",
+          observation: `DEVOLUCIÓN DE PRODUCTOS: ${updatedSale?.series}-${updatedSale?.number}`
+        });
+        productsToIncrease.push({
+          id_product: +item.id_product,
+          quantity: +item.quantity,
+        });
+      }
+
+      await this.createProductMovementExternal(movements, tenancy);
+      await this.unitIncreaseExternal(productsToIncrease,tenancy);
+    }
+
+    return { message: 'Product was remove successfull' };
   }
+
+  async unitIncreaseExternal(products: productsToIncrease[], tenancy: string) {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.post(`${this.configService.get<string>('URL_PRODUCTS_SERVICE')}/product/increase`,
+          { products },
+          {
+            headers: {
+              'x-tenant-id': tenancy,
+            },
+          }
+        )
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error en unitIncreaseExternal:', error?.response?.data || error.message);
+      throw new InternalServerErrorException('Error al enviar datos al servicio externo de incremento');
+    }
+  }
+
 }

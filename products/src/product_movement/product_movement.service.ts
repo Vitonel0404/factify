@@ -37,8 +37,14 @@ export class ProductMovementService {
   }
 
   async create(createProductMovementDto: CreateProductMovementDto) {
-    const new_movement = this.productMovementRepository.create(createProductMovementDto);
-    return this.productMovementRepository.save(new_movement);
+    try {
+      const new_movement = this.productMovementRepository.create(createProductMovementDto);
+      return this.productMovementRepository.save(new_movement);
+    } catch (error) {
+      console.log(error);
+      
+    }
+
   }
 
   async findAll(id_branch: number) {
