@@ -1,11 +1,18 @@
 import { CanActivate, ExecutionContext, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Request } from 'express';
-import { jwtConstants } from '../constants/jwt.constant';
 import { JwtService } from '@nestjs/jwt';
+import { HttpService } from '@nestjs/axios';
+import { ConfigService } from '@nestjs/config';
+import { lastValueFrom } from 'rxjs';
+import { jwtConstants } from '../constants/jwt.constant';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-    constructor(private readonly jwtService:JwtService) { }
+    constructor(
+        private readonly jwtService: JwtService,
+        private readonly httpService: HttpService,
+        private readonly configService: ConfigService,
+    ) { }
 
     async canActivate(context: ExecutionContext,): Promise<boolean> {
 
@@ -17,7 +24,9 @@ export class AuthGuard implements CanActivate {
 
         try {
             const secret = jwtConstants.secret;
-            const user = await this.jwtService.verifyAsync(token, {secret});
+            const _token: any = await this.verifyUserWithAuthService(token);
+            const user = await this.jwtService.verifyAsync(_token, { secret });
+            console.log(user);
             request.user = user;
             request.headers['x-tenant-id'] = user.tenant;
             request.headers['branch'] = user.id_branch;
@@ -26,11 +35,30 @@ export class AuthGuard implements CanActivate {
             throw new ForbiddenException('Invalid token');
         }
     }
- 
-    private extractTokenFromHeader(request: Request): string | undefined | null{
+
+    private extractTokenFromHeader(request: Request): string | undefined | null {
         const cookieArray = request.headers?.authorization?.split(';').map(cookie => cookie.trim()) ?? [];
         if (cookieArray.length == 0) return null
         const token = cookieArray[0].split(' ')[1];
         return token;
+    }
+
+    private async verifyUserWithAuthService(token: string): Promise<any> {
+
+        const url = this.configService.get<string>('API_AUTHENTICATED_URL');
+        if (!url) throw new Error('URL de autenticación no definida');
+
+        try {
+            const response = await lastValueFrom(
+                this.httpService.get(url+'/auth/verify', {
+                    headers: { Authorization: `Bearer ${token}` },
+                }),
+            );
+            const _token = response.data;
+            return _token;
+
+        } catch (error) {
+            throw new UnauthorizedException('Usuario no autorizado en AuthService');
+        }
     }
 }

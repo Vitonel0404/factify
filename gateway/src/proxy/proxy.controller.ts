@@ -3,16 +3,20 @@ import { ProxyService } from './proxy.service';
 import { AuthAdminGuard } from './guards/auth-admin.guard';
 import { Request, Response } from 'express';
 import { AuthGuard } from './guards/auth.guard';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('proxy')
 export class ProxyController {
-  constructor(private readonly proxyService: ProxyService) {}
+  constructor(
+    private readonly proxyService: ProxyService,
+    private readonly configService: ConfigService,
+  ) {}
 
   @All('auth/*')
   async proxyToAuth(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     const cleanedUrl = req.originalUrl.replace(/^\/proxy\/auth/, '');
     req.url = cleanedUrl;
-    await this.proxyService.forwardRequest(req, res, 'http://localhost:3001');
+    await this.proxyService.forwardRequest(req, res, this.configService.get<string>('API_AUTHENTICATED_URL')!);
   }
 
   @All('org/*')
@@ -20,7 +24,7 @@ export class ProxyController {
   async proxyToOrg(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     const cleanedUrl = req.originalUrl.replace(/^\/proxy\/org/, '');
     req.url = cleanedUrl;
-    await this.proxyService.forwardRequest(req, res, 'http://localhost:3002');
+    await this.proxyService.forwardRequest(req, res, this.configService.get<string>('API_ORGANIZATION_URL')!);
   }
 
   @All('manage/*')
@@ -28,7 +32,7 @@ export class ProxyController {
   async proxyToManagement(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     const cleanedUrl = req.originalUrl.replace(/^\/proxy\/manage/, '');
     req.url = cleanedUrl;   
-    await this.proxyService.forwardRequest(req, res, 'http://localhost:3003');
+    await this.proxyService.forwardRequest(req, res, this.configService.get<string>('API_MANAGEMENT_URL')!);
   }
 
   @All('products/*')
@@ -36,7 +40,7 @@ export class ProxyController {
   async proxyToProducts(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     const cleanedUrl = req.originalUrl.replace(/^\/proxy\/products/, '');
     req.url = cleanedUrl;
-    await this.proxyService.forwardRequest(req, res, 'http://localhost:3004');
+    await this.proxyService.forwardRequest(req, res, this.configService.get<string>('API_PRODUCTS_URL')!);
   }
 
   @All('sales/*')
@@ -44,7 +48,7 @@ export class ProxyController {
   async proxyToSales(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     const cleanedUrl = req.originalUrl.replace(/^\/proxy\/sales/, '');
     req.url = cleanedUrl;
-    await this.proxyService.forwardRequest(req, res, 'http://localhost:3005');
+    await this.proxyService.forwardRequest(req, res, this.configService.get<string>('API_SALES_URL')!);
   }
 
   @All('purchases/*')
@@ -52,7 +56,7 @@ export class ProxyController {
   async proxyToPurchase(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     const cleanedUrl = req.originalUrl.replace(/^\/proxy\/purchases/, '');
     req.url = cleanedUrl;
-    await this.proxyService.forwardRequest(req, res, 'http://localhost:3006');
+    await this.proxyService.forwardRequest(req, res, this.configService.get<string>('API_PURCHASES_URL')!);
   }
 
 }
