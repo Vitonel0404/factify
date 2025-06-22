@@ -9,6 +9,11 @@ import { PaymentSaleService } from 'src/payment_sale/payment_sale.service';
 import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
+import { create_invoice } from './facturador/billing/invoice';
+import { firmarXML } from './facturador/billing/firmar_xml';
+import { enviarSunat } from './facturador/billing/send_sunat';
+import { base64ToZip } from './facturador/utils/base64ToZip';
+import { leerCdrXml } from './facturador/utils/readCDR';
 
 type productsToDiscount = {
   id_product: number;
@@ -45,6 +50,7 @@ export class SaleService {
   }
 
   async create(createSaleDto: CreateSaleDto, tenancy: string) {
+    const response: any = {};
     const { detail, payment } = createSaleDto
 
     createSaleDto.total = detail.reduce((sum, item) => sum + item.subtotal, 0);
@@ -88,11 +94,228 @@ export class SaleService {
       await this.paymentSaleService.create(pay);
     }
 
+
+
     await this.unitDiscountExternal(productsToDiscount, tenancy);
     await this.createProductMovementExternal(movements, tenancy);
     await this.increaseVoucherNumerExternal(correlative.id_correlative, tenancy);
 
-    return savedSale;
+
+
+
+    const _sale: any = savedSale;
+    _sale.id_sale = savedSale.id_sale;
+
+    const res_sunat: any = this.sentToSunat(_sale, detail, 'as', 'as', tenancy);
+
+    if (res_sunat.status) {
+      // await this.mark_sent_sunat(order.id_order);
+    }
+
+    response.message_sunat = res_sunat.response_sunat_description;
+    
+    return response;
+  }
+
+  async sentToSunat(sale: { id_sale: number } & CreateSaleDto, detail: any, filename_certificate: string, password_certificate: string, tenancy: string) {
+    const voucher_type = await this.getVoucherTypeDataExternal(sale.id_voucher_type, tenancy)
+    const company: any = await this.getCompanyData(sale.id_sale);
+    const customer: any = await this.getCustomerData(sale.id_sale);
+
+    const _voucher: any = {
+      serie: sale.series,
+      numero: sale.number,
+      fecha_emision: "2023-01-26",
+      hora_emision: "10:02:49",
+      fecha_vencimiento: sale.due_date ? sale.due_date : null,
+      moneda_id: "2",
+      forma_pago_id: "1",
+      total_gravada: "1",
+      total_igv: "90",
+      igv_value: sale.igv,
+      total_exonerada: "",
+      total_inafecta: "",
+      tipo_documento_codigo: voucher_type.sunat_code,
+      nota: ""
+    };
+
+    const _company = {
+      ruc: company.ruc,
+      razon_social: company.legal_name,
+      nombre_comercial: company.tradename,
+      domicilio_fiscal: company.address,
+      ubigeo: company.geocode,
+      urbanizacion: company.urbanization,
+      distrito: company.district,
+      provincia: company.province,
+      departamento: company.department,
+      usu_secundario_produccion_user: company.usu_second_production_user,
+      usu_secundario_produccion_password: company.usu_second_production_password,
+      is_production: false
+    };
+
+    const codigo_tipo_entidad = (customer.document_number.length === 8) ? '1' : '6';
+
+    const _customer = {
+      razon_social_nombres: customer.customer,
+      numero_documento: customer.document_number,
+      codigo_tipo_entidad: codigo_tipo_entidad,
+      cliente_direccion: customer.address
+    };
+
+    const detalle: any[] = [];
+    let total_a_pagar = 0;
+    let total_gravada = 0;
+    let total_exonerada = 0;
+    let total_igv = 0;
+
+    const calculate_number_base_price = 1 + (sale.igv / 100);
+
+    for (const element of detail) {
+      const item = {
+        producto: element.description,
+        cantidad: element.quantity,
+        precio: element.price,
+        tipo_igv_codigo: 10,
+        precio_base: element.price / calculate_number_base_price,
+        codigo_producto: element.id_dish,
+        codigo_sunat: '-'
+      };
+
+      const subtotal = parseFloat(element.quantity) * parseFloat(element.price);
+      total_a_pagar += subtotal;
+      total_gravada += subtotal / calculate_number_base_price;
+
+      detalle.push(item);
+    }
+
+    _voucher.total_a_pagar = total_a_pagar.toFixed(2);
+    _voucher.total_gravada = total_gravada.toFixed(2);
+    _voucher.total_exonerada = null;
+    _voucher.total_inafecta = null;
+    _voucher.total_igv = (total_a_pagar - total_gravada).toFixed(2);
+
+    const now = new Date();
+
+    _voucher.fecha_emision = now.toISOString().split('T')[0];
+    _voucher.hora_emision = now.toTimeString().split(' ')[0];
+
+    const nombre_archivo = `${_company.ruc}-${_voucher.tipo_documento_codigo}-${_voucher.serie}-${_voucher.numero}`;
+
+    create_invoice(nombre_archivo, _company, _customer, _voucher, detalle);
+
+    const doc = _voucher.tipo_documento_codigo == '03' ? 'BOLETAS' : 'FACTURAS'
+    const route_xml = `${doc}/XML/${nombre_archivo}.xml`
+    const route_firmados = `${doc}/FIRMADOS/${nombre_archivo}.xml`
+    const route_zip = `${doc}/FIRMADOS/${nombre_archivo}`
+
+    await firmarXML(route_xml, route_firmados, filename_certificate, password_certificate);
+    const res = await enviarSunat(_company, route_zip, nombre_archivo);
+    if (!res.status) {
+      return {
+        status: false,
+        response_sunat_code: '0',
+        response_sunat_description: res.error
+      }
+    }
+    const route_cdr = `${doc}/CDR`
+    await base64ToZip(res.result_base64_string[0].applicationResponse, route_cdr, nombre_archivo)
+    const res_cdr = await leerCdrXml(route_cdr, nombre_archivo)
+    return res_cdr
+  }
+
+  async getVoucherTypeDataExternal(id_voucher_type: number, tenancy: string) {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.get(`${this.configService.get<string>('URL_MANAGEMENT_SERVICE')}/voucher-type/${id_voucher_type}`,
+          {
+            headers: {
+              'x-tenant-id': tenancy,
+            },
+          }
+        )
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error en getVoucherTypeDataExternal:', error?.response?.data || error.message);
+      throw new InternalServerErrorException('Error al enviar datos al servicio externo de obtención de tipo de comprobante');
+    }
+  }
+
+  async getCompanyData(id_sale: number) {
+    try {
+      const data = await this.saleRepository
+        .createQueryBuilder('sale')
+        .innerJoin('branch', 'branch', 'branch.id_branch = sale.id_branch')
+        .innerJoin('company', 'company', 'company.id_company = branch.id_company')
+        .addSelect([
+          'company.ruc AS ruc',
+          'company.legal_name AS legal_name',
+          'company.logo AS logo',
+          'company.igv AS igv',
+          'branch.trade_name AS trade_name',
+          'branch.address AS address',
+          'branch.geo_code AS geo_code',
+          'branch.department AS department',
+          'branch.province AS province',
+          'branch.district AS district',
+          'branch.urbanization AS urbanization',
+          'branch.annex_code AS annex_code',
+          'branch.phone AS phone',
+          'branch.email AS email',
+          'branch.is_main AS is_main'
+        ])
+        .where('sale.id_sale = :id_sale', { id_sale })
+        .getRawOne();
+
+      const company = {
+        ruc: data.ruc,
+        legal_name: data.legal_name,
+        logo: data.logo,
+        igv: data.igv,
+        trade_name: data.trade_name,
+        address: data.address,
+        geo_code: data.geo_code,
+        department: data.department,
+        province: data.province,
+        district: data.district,
+        urbanization: data.urbanization,
+        annex_code: data.annex_code,
+        phone: data.phone,
+        email: data.email,
+        is_main: data.is_main
+      }
+
+      return company;
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async getCustomerData(id_sale: number) {
+    try {
+      const data = await this.saleRepository
+        .createQueryBuilder('sale')
+        .innerJoin('customer', 'customer', 'customer.id_customer = sale.id_customer')
+        .addSelect([
+          'customer.document_number AS document_number',
+          'customer.full_name AS full_name',
+          'customer.address AS address'
+
+        ])
+        .where('sale.id_sale = :id_sale', { id_sale })
+        .getRawOne();
+
+      const customer = {
+        document_number: data.document_number,
+        full_name: data.full_name,
+        address: data.address
+      }
+      return customer;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async getVoucherNumerExternal(id_branch: number, id_voucher: number, tenancy: string) {
@@ -241,7 +464,7 @@ export class SaleService {
       }
 
       await this.createProductMovementExternal(movements, tenancy);
-      await this.unitIncreaseExternal(productsToIncrease,tenancy);
+      await this.unitIncreaseExternal(productsToIncrease, tenancy);
     }
 
     return { message: 'Sale was remove successfull' };
