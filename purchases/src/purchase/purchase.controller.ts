@@ -36,7 +36,10 @@ export class PurchaseController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.purchaseService.remove(+id);
+  remove(@Req() req: Request, @Param('id') id: string, @Body() data: {user_name :string, reason: string, is_return : boolean}) {
+    const tenancy = Array.isArray(req.headers['x-tenant-id'])
+    ? req.headers['x-tenant-id'][0]
+    : req.headers['x-tenant-id'] || '';
+    return this.purchaseService.remove(+id, data, tenancy);
   }
 }

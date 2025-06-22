@@ -66,10 +66,63 @@ export class AuthService {
 
       const token = await this.jwtService.signAsync(payload);
 
-      return { token, user: _user };
+      const compnay = await this.getCompanyData(user_name)
+
+      return { token, user: _user, compnay };
     } catch (error) {
       console.log(error);
 
+    }
+  }
+
+  async getCompanyData(user_name: string) {
+    try {
+      const data = await this.userRepository
+        .createQueryBuilder('user')
+        .innerJoin('branch', 'branch', 'branch.id_branch = user.id_branch')
+        .innerJoin('company', 'company', 'company.id_company = branch.id_company')
+        .addSelect([
+          'company.ruc AS ruc',
+          'company.legal_name AS legal_name',
+          'company.logo AS logo',
+          'company.igv AS igv',
+          'branch.trade_name AS trade_name',
+          'branch.address AS address',
+          'branch.geo_code AS geo_code',
+          'branch.department AS department',
+          'branch.province AS province',
+          'branch.district AS district',
+          'branch.urbanization AS urbanization',
+          'branch.annex_code AS annex_code',
+          'branch.phone AS phone',
+          'branch.email AS email',
+          'branch.is_main AS is_main'
+        ])
+        .where('user.user_name = :user_name', { user_name })
+        .getRawOne();
+
+      const company = {
+        ruc: data.ruc,
+        legal_name: data.legal_name,
+        logo: data.logo,
+        igv: data.igv,
+        trade_name: data.trade_name,
+        address: data.address,
+        geo_code: data.geo_code,
+        department: data.department,
+        province: data.province,
+        district: data.district,
+        urbanization: data.urbanization,
+        annex_code: data.annex_code,
+        phone: data.phone,
+        email: data.email,
+        is_main: data.is_main
+      }
+
+      return company;
+
+    } catch (error) {
+      console.log(error);
     }
   }
 
@@ -100,11 +153,7 @@ export class AuthService {
     try {
       const secret = jwtConstants.secret;
       const payload = await this.jwtService.verifyAsync(this.getToken(token), { secret });
-      console.log(payload);
-      
-      const userExists = await this.userRepository.findOne({ where: { user_name:payload.user_name } });
-      console.log(userExists);
-      
+      const userExists = await this.userRepository.findOne({ where: { user_name: payload.user_name } });
       if (!userExists) throw new UnauthorizedException('Usuario no registrado');
       return this.getToken(token);
     } catch (error) {
@@ -119,10 +168,7 @@ export class AuthService {
     try {
       const secret = jwtConstants.secret;
       const payload = await this.jwtService.verifyAsync(this.getToken(token), { secret });
-      
-      const userExists = await this.adminUserRepository.findOne({ where: { user_name:payload.user_name } });
-      console.log(userExists);
-      
+      const userExists = await this.adminUserRepository.findOne({ where: { user_name: payload.user_name } });
       if (!userExists) throw new UnauthorizedException('Usuario no registrado');
       return this.getToken(token);
     } catch (error) {

@@ -232,7 +232,7 @@ export class SaleService {
           id_product: +item.id_product,
           quantity: +item.quantity,
           movement_type: "INGRESO",
-          observation: `DEVOLUCIÓN DE PRODUCTOS: ${updatedSale?.series}-${updatedSale?.number}`
+          observation: `DEVOLUCIÓN DE PRODUCTOS | Venta anulada: ${updatedSale?.series}-${updatedSale?.number}`
         });
         productsToIncrease.push({
           id_product: +item.id_product,
@@ -244,7 +244,7 @@ export class SaleService {
       await this.unitIncreaseExternal(productsToIncrease,tenancy);
     }
 
-    return { message: 'Product was remove successfull' };
+    return { message: 'Sale was remove successfull' };
   }
 
   async unitIncreaseExternal(products: productsToIncrease[], tenancy: string) {

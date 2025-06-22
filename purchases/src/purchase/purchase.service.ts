@@ -1,4 +1,4 @@
-import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreatePurchaseDto } from './dto/create-purchase.dto';
 import { UpdatePurchaseDto } from './dto/update-purchase.dto';
 import { DataSource, Repository } from 'typeorm';
@@ -8,6 +8,11 @@ import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { PurchaseDetailService } from 'src/purchase_detail/purchase_detail.service';
 import { firstValueFrom } from 'rxjs';
+
+type productsToDiscount = {
+  id_product: number;
+  quantity: number;
+};
 
 type productsToIncrease = {
   id_product: number;
@@ -129,7 +134,7 @@ export class PurchaseService {
         ])
         .where('purchase.id_branch = :branch', { branch: id_branch })
         .getRawMany();
-        
+
       return result
 
     } catch (error) {
@@ -146,7 +151,60 @@ export class PurchaseService {
     return `This action updates a #${id} purchase`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} purchase`;
+  async remove(id_purchase: number, data: { user_name: string, reason: string, is_return: boolean }, tenancy: string) {
+    const result = await this.purchaseRepository.update(
+      { id_purchase: id_purchase },
+      {
+        is_active: false,
+        reason_cancellation: data.reason,
+        user_name: data.user_name
+      },
+    )
+    if (result.affected === 0) throw new NotFoundException(`Purchase with id ${id_purchase} not found`);
+    const updatedPurchase = await this.purchaseRepository.findOne({ where: { id_purchase } });
+
+    const detail = await this.purchaseDetailService.findAll(id_purchase);
+    const movements: productsToMovement[] = []
+    const productsToDiscount: productsToDiscount[] = [];
+
+    for (const item of detail) {
+      movements.push({
+        id_branch: updatedPurchase?.id_branch || 0,
+        id_product: +item.id_product,
+        quantity: +item.quantity,
+        movement_type: "EGRESO",
+        observation: `SALIDA DE PRODUCTOS | Compra anulada: ${updatedPurchase?.series}-${updatedPurchase?.number}`
+      });
+      productsToDiscount.push({
+        id_product: +item.id_product,
+        quantity: +item.quantity,
+      });
+    }
+    console.log(movements);
+    console.log(productsToDiscount);
+
+    await this.createProductMovementExternal(movements, tenancy);
+    await this.unitDiscountExternal(productsToDiscount, tenancy);
+
+    return { message: 'Purchase was remove successfull' };
+  }
+
+  async unitDiscountExternal(products: productsToDiscount[], tenancy: string) {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.post(`${this.configService.get<string>('URL_PRODUCTS_SERVICE')}/product/discount`,
+          { products },
+          {
+            headers: {
+              'x-tenant-id': tenancy,
+            },
+          }
+        )
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error en unitDiscountExternal:', error?.response?.data || error.message);
+      throw new InternalServerErrorException('Error al enviar datos al servicio externo de descuento');
+    }
   }
 }
