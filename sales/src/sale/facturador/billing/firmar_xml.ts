@@ -18,8 +18,8 @@ export async function firmarXML(filename: string, firmado: string, certificate_f
 
   const p12Asn1 = forge.asn1.fromDer(DER);
   const p12 = forge.pkcs12.pkcs12FromAsn1(p12Asn1, password);
-  let privateKey = null;
-  let certificate = null;
+  let privateKey : any = null;
+  let certificate : any = null;
 
   p12.safeContents.forEach((safeContent: any) => {
     safeContent.safeBags.forEach((bag: any) => {
@@ -50,7 +50,7 @@ export async function firmarXML(filename: string, firmado: string, certificate_f
   });
 
   sig.addReference({
-    xpath: "//*[local-name(.)='CreditNote']",
+    xpath: "//*[local-name(.)='Invoice']",
     digestAlgorithm: "http://www.w3.org/2000/09/xmldsig#sha1",
     transforms: [
       'http://www.w3.org/2000/09/xmldsig#enveloped-signature',

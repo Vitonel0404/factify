@@ -26,7 +26,7 @@
                 <cbc:ID>{{empresa.ruc}}</cbc:ID>
             </cac:PartyIdentification>
             <cac:PartyName>
-                <cbc:Name>{{empresa.razon_social}}</cbc:Name>
+                <cbc:Name>{{empresa.legal_name}}</cbc:Name>
             </cac:PartyName>
         </cac:SignatoryParty>
         <cac:DigitalSignatureAttachment>
@@ -41,18 +41,18 @@
                 <cbc:ID schemeID="6">{{empresa.ruc}}</cbc:ID>
             </cac:PartyIdentification>
             <cac:PartyName>
-                <cbc:Name>{{empresa.nombre_comercial}}</cbc:Name>
+                <cbc:Name>{{empresa.trade_name}}</cbc:Name>
             </cac:PartyName>
             <cac:PartyLegalEntity>
-                <cbc:RegistrationName>{{empresa.razon_social}}</cbc:RegistrationName>
+                <cbc:RegistrationName>{{empresa.legal_name}}</cbc:RegistrationName>
                 <cac:RegistrationAddress>
                     <cbc:ID schemeName="Ubigeos" schemeAgencyName="PE:INEI">{{empresa.ubigeo}}</cbc:ID>
                     <cbc:AddressTypeCode listAgencyName="PE:SUNAT" listName="Establecimientos anexos">0000</cbc:AddressTypeCode>
-                    <cbc:CityName>{{empresa.provincia}}</cbc:CityName>
-                    <cbc:CountrySubentity>{{empresa.departamento}}</cbc:CountrySubentity>
-                    <cbc:District>{{empresa.distrito}}</cbc:District>
+                    <cbc:CityName>{{empresa.province}}</cbc:CityName>
+                    <cbc:CountrySubentity>{{empresa.department}}</cbc:CountrySubentity>
+                    <cbc:District>{{empresa.district}}</cbc:District>
                     <cac:AddressLine>
-                        <cbc:Line>{{empresa.domicilio_fiscal}}</cbc:Line>
+                        <cbc:Line>{{empresa.address}}</cbc:Line>
                     </cac:AddressLine>
                     <cac:Country>
                         <cbc:IdentificationCode listID="ISO 3166-1" listAgencyName="United Nations Economic Commission for Europe" listName="Country">PE</cbc:IdentificationCode>

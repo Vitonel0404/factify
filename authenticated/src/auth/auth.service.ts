@@ -66,9 +66,9 @@ export class AuthService {
 
       const token = await this.jwtService.signAsync(payload);
 
-      const compnay = await this.getCompanyData(user_name)
+      const company = await this.getCompanyData(user_name)
 
-      return { token, user: _user, compnay };
+      return { token, user: _user, company };
     } catch (error) {
       console.log(error);
 

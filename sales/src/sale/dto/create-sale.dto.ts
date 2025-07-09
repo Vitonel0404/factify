@@ -69,4 +69,23 @@ export class CreateSaleDto {
   @ValidateNested({ each: true })
   @Type(() => CreatePaymentSaleDto)
   payment: CreatePaymentSaleDto[];
+
+  @IsOptional()
+  company:{
+    ruc: string
+    legal_name: string
+    logo: string
+    igv: string
+    trade_name: string
+    address: string
+    geo_code: string
+    department: string
+    province: string
+    district: string
+    urbanization: string
+    annex_code: string
+    phone: string
+    email: string
+    is_main: string
+  }
 }

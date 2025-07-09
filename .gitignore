@@ -54,3 +54,26 @@ pids
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+sales/media/certificate/*.pfx
+sales/media/certificate/*.p12
+
+sales/media/facturador/BOLETAS/CDR/*.xml
+sales/media/facturador/BOLETAS/FIRMADOS/*.xml
+sales/media/facturador/BOLETAS/XML/*.xml
+sales/media/facturador/FACTURAS/CDR/*.xml
+sales/media/facturador/FACTURAS/FIRMADOS/*.xml
+sales/media/facturador/FACTURAS/XML/*.xml
+sales/media/facturador/NOTA_CREDITO/CDR/*.xml
+sales/media/facturador/NOTA_CREDITO/FIRMADOS/*.xml
+sales/media/facturador/NOTA_CREDITO/XML/*.xml
+
+sales/media/facturador/BOLETAS/CDR/*.zip
+sales/media/facturador/BOLETAS/FIRMADOS/*.zip
+sales/media/facturador/BOLETAS/XML/*.zip
+sales/media/facturador/FACTURAS/CDR/*.zip
+sales/media/facturador/FACTURAS/FIRMADOS/*.zip
+sales/media/facturador/FACTURAS/XML/*.zip
+sales/media/facturador/NOTA_CREDITO/CDR/*.zip
+sales/media/facturador/NOTA_CREDITO/FIRMADOS/*.zip
+sales/media/facturador/NOTA_CREDITO/XML/*.zip

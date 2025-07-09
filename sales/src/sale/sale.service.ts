@@ -100,26 +100,27 @@ export class SaleService {
     await this.createProductMovementExternal(movements, tenancy);
     await this.increaseVoucherNumerExternal(correlative.id_correlative, tenancy);
 
-
-
-
     const _sale: any = savedSale;
     _sale.id_sale = savedSale.id_sale;
+    _sale.company = createSaleDto.company
 
-    const res_sunat: any = this.sentToSunat(_sale, detail, 'as', 'as', tenancy);
-
-    if (res_sunat.status) {
-      // await this.mark_sent_sunat(order.id_order);
+    response.status = savedSale ? true : false;
+    response.message_sunat = 'Venta registrada correctamente';
+    
+    if (createSaleDto.series.includes('B') || createSaleDto.series.includes('F')) {
+      const res_sunat: any = await this.sentToSunat(_sale, detail, '10167846292.pfx', 'contrasena', tenancy);
+      if (res_sunat.status) {
+        // await this.mark_sent_sunat(order.id_order);
+      }
+      response.message_sunat = 'Venta registrada correctamente. '+res_sunat.response_sunat_description;
     }
-
-    response.message_sunat = res_sunat.response_sunat_description;
     
     return response;
   }
 
   async sentToSunat(sale: { id_sale: number } & CreateSaleDto, detail: any, filename_certificate: string, password_certificate: string, tenancy: string) {
     const voucher_type = await this.getVoucherTypeDataExternal(sale.id_voucher_type, tenancy)
-    const company: any = await this.getCompanyData(sale.id_sale);
+    const _company: any = sale.company;
     const customer: any = await this.getCustomerData(sale.id_sale);
 
     const _voucher: any = {
@@ -139,25 +140,10 @@ export class SaleService {
       nota: ""
     };
 
-    const _company = {
-      ruc: company.ruc,
-      razon_social: company.legal_name,
-      nombre_comercial: company.tradename,
-      domicilio_fiscal: company.address,
-      ubigeo: company.geocode,
-      urbanizacion: company.urbanization,
-      distrito: company.district,
-      provincia: company.province,
-      departamento: company.department,
-      usu_secundario_produccion_user: company.usu_second_production_user,
-      usu_secundario_produccion_password: company.usu_second_production_password,
-      is_production: false
-    };
-
     const codigo_tipo_entidad = (customer.document_number.length === 8) ? '1' : '6';
 
     const _customer = {
-      razon_social_nombres: customer.customer,
+      razon_social_nombres: customer.full_name,
       numero_documento: customer.document_number,
       codigo_tipo_entidad: codigo_tipo_entidad,
       cliente_direccion: customer.address
@@ -173,12 +159,12 @@ export class SaleService {
 
     for (const element of detail) {
       const item = {
-        producto: element.description,
+        producto: element.product,
         cantidad: element.quantity,
         precio: element.price,
         tipo_igv_codigo: 10,
         precio_base: element.price / calculate_number_base_price,
-        codigo_producto: element.id_dish,
+        codigo_producto: element.id_product,
         codigo_sunat: '-'
       };
 
@@ -239,57 +225,6 @@ export class SaleService {
     } catch (error) {
       console.error('Error en getVoucherTypeDataExternal:', error?.response?.data || error.message);
       throw new InternalServerErrorException('Error al enviar datos al servicio externo de obtención de tipo de comprobante');
-    }
-  }
-
-  async getCompanyData(id_sale: number) {
-    try {
-      const data = await this.saleRepository
-        .createQueryBuilder('sale')
-        .innerJoin('branch', 'branch', 'branch.id_branch = sale.id_branch')
-        .innerJoin('company', 'company', 'company.id_company = branch.id_company')
-        .addSelect([
-          'company.ruc AS ruc',
-          'company.legal_name AS legal_name',
-          'company.logo AS logo',
-          'company.igv AS igv',
-          'branch.trade_name AS trade_name',
-          'branch.address AS address',
-          'branch.geo_code AS geo_code',
-          'branch.department AS department',
-          'branch.province AS province',
-          'branch.district AS district',
-          'branch.urbanization AS urbanization',
-          'branch.annex_code AS annex_code',
-          'branch.phone AS phone',
-          'branch.email AS email',
-          'branch.is_main AS is_main'
-        ])
-        .where('sale.id_sale = :id_sale', { id_sale })
-        .getRawOne();
-
-      const company = {
-        ruc: data.ruc,
-        legal_name: data.legal_name,
-        logo: data.logo,
-        igv: data.igv,
-        trade_name: data.trade_name,
-        address: data.address,
-        geo_code: data.geo_code,
-        department: data.department,
-        province: data.province,
-        district: data.district,
-        urbanization: data.urbanization,
-        annex_code: data.annex_code,
-        phone: data.phone,
-        email: data.email,
-        is_main: data.is_main
-      }
-
-      return company;
-
-    } catch (error) {
-      console.log(error);
     }
   }
 
