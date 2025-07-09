@@ -1,16 +1,17 @@
-import * as fs from "fs";
+import { promises as fs } from 'fs';
 import * as path from "path";
 import { SignedXml } from 'xml-crypto';
 import * as forge from 'node-forge';
 
-export async function firmarXML(filename: string, firmado: string, certificate_filename: string, password: string) {
+export async function firmarXML(ruc: string, filename: string, firmado: string, certificate_filename: string, password: string) {
 
-  const proyectoDirname = path.resolve(__dirname, '..', '..', '..', '..');
+  const _root = path.resolve(__dirname, '..', '..', '..', '..', '..');
 
-  const routeCertificado = path.join(proyectoDirname, 'media', 'certificate', certificate_filename);
-  const routeXML = path.join(proyectoDirname, 'media', 'facturador', filename);
+  const routeCertificado = path.join(_root, 'sales', 'media', 'certificate', certificate_filename);
 
-  const ArrayBuffer = getP12(routeCertificado);
+  const routeXML = path.join(_root, 'documents', ruc, filename);
+
+  const ArrayBuffer = await getP12(routeCertificado);
 
   const DER = forge.util.decode64(
     forge.util.binary.base64.encode(new Uint8Array(ArrayBuffer))
@@ -18,8 +19,8 @@ export async function firmarXML(filename: string, firmado: string, certificate_f
 
   const p12Asn1 = forge.asn1.fromDer(DER);
   const p12 = forge.pkcs12.pkcs12FromAsn1(p12Asn1, password);
-  let privateKey : any = null;
-  let certificate : any = null;
+  let privateKey: any = null;
+  let certificate: any = null;
 
   p12.safeContents.forEach((safeContent: any) => {
     safeContent.safeBags.forEach((bag: any) => {
@@ -59,21 +60,23 @@ export async function firmarXML(filename: string, firmado: string, certificate_f
     isEmptyUri: true
   });
 
-  let xmlContent = fs.readFileSync(routeXML, 'utf-8');
+  let xmlContent = await fs.readFile(routeXML, 'utf-8');
   sig.computeSignature(xmlContent, {
     location: { reference: "//*[local-name(.)='ExtensionContent']", action: "append" },
     prefix: "ds",
   });
+  const _route_firmado = path.join(_root, 'documents', ruc, firmado, '..')
+  await ensureDirectoryExists(_route_firmado);
+  const routeSave = path.join(_root, 'documents', ruc, firmado);
 
-  const routeSave = path.join(proyectoDirname, 'media', 'facturador', firmado);
-
-  fs.writeFileSync(routeSave, sig.getSignedXml(), { encoding: 'utf-8' });
+  await fs.writeFile(routeSave, sig.getSignedXml(), { encoding: 'utf-8' });
+  await eliminarXML(routeXML);
 }
 
 
-function getP12(filePath: string): ArrayBuffer {
+async function getP12(filePath: string): Promise<ArrayBuffer> {
   try {
-    const p12Buffer = fs.readFileSync(filePath);
+    const p12Buffer = await fs.readFile(filePath);
     const arrayBuffer = p12Buffer.buffer.slice(
       p12Buffer.byteOffset,
       p12Buffer.byteOffset + p12Buffer.byteLength
@@ -81,5 +84,23 @@ function getP12(filePath: string): ArrayBuffer {
     return arrayBuffer;
   } catch (error) {
     throw new Error(`Error al leer el archivo P12: ${error.message}`);
+  }
+}
+
+async function ensureDirectoryExists(dirPath: string) {
+  try {
+    await fs.mkdir(dirPath, { recursive: true });
+  } catch (error) {
+    console.error('Error al crear la carpeta:', error);
+    throw error;
+  }
+}
+
+async function eliminarXML(file: string): Promise<void> {
+  try {
+    await fs.access(file);
+    await fs.unlink(file);
+  } catch (error) {
+    console.error(`Error al eliminar archivos: ${error}`);
   }
 }

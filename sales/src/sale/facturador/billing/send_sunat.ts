@@ -1,30 +1,30 @@
-import * as fs from "fs";
+import { promises as fs } from 'fs';
 import * as path from "path";
 import * as AdmZip from 'adm-zip';
 import * as soap from 'soap';
 
 export async function enviarSunat(empresa : any, path_filename : string, filename : string) {
 
-    const proyectoDirname = path.resolve(__dirname, '..', '..', '..', '..');
-    const fileToZip = path.join(proyectoDirname, 'media', 'facturador', path_filename+'.xml');
-    if (!fs.existsSync(fileToZip)) {
+    const _root = path.resolve(__dirname, '..', '..', '..', '..', '..');
+    const fileToZip = path.join(_root, 'documents', empresa.ruc, path_filename+'.xml');
+    if (!fs.access(fileToZip)) {
         return { status: false, error: 'El archivo XML no existe en la ruta especificada.' };
     }
 
     try {
-        const zipFilePath = path.join(proyectoDirname, 'media', 'facturador', `${path_filename}.zip`);
+        const zipFilePath = path.join(_root, 'documents', empresa.ruc, `${path_filename}.zip`);
         const zipFile = new AdmZip();
         zipFile.addLocalFile(fileToZip);
         zipFile.writeZip(zipFilePath);
 
         const url = empresa.is_production
-            ?   path.join(proyectoDirname, 'media', 'services','prod', 'billService.wsdl')
-            :  path.join(proyectoDirname, 'media', 'services','dev', 'billService.wsdl');
+            ?   path.join(_root, 'sales', 'media', 'services','prod', 'billService.wsdl')
+            :  path.join(_root, 'sales','media', 'services','dev', 'billService.wsdl');
 
         const username = empresa.usu_secundario_produccion_user;
         const password = empresa.usu_secundario_produccion_password;
 
-        const fileBuffer = fs.readFileSync(zipFilePath);
+        const fileBuffer = await fs.readFile(zipFilePath);
         const fileBase64 = fileBuffer.toString('base64');
 
         const client = await soap.createClientAsync(url);
@@ -34,7 +34,7 @@ export async function enviarSunat(empresa : any, path_filename : string, filenam
             fileName: `${filename}.zip`,
             contentFile: fileBase64
         });
-        eliminarFirmaComprimido(path_filename);
+        eliminarFirmaComprimido(empresa.ruc, path_filename);
         return { status: true, result_base64_string: resultBase64String, filename };
     } catch (error) {
         console.error(`Error al enviar documento a SUNAT: ${error}`);
@@ -42,13 +42,12 @@ export async function enviarSunat(empresa : any, path_filename : string, filenam
     }
 }
 
-function eliminarFirmaComprimido(fileToZip: string): void {
-    const proyectoDirname = path.resolve(__dirname, '..', '..', '..', '..');
-    const zip = path.join(proyectoDirname, 'media', 'facturador', fileToZip+'.zip');
+async function eliminarFirmaComprimido(ruc: string, fileToZip: string): Promise<void> {
+    const proyectoDirname = path.resolve(__dirname, '..', '..', '..', '..', '..');
+    const zip = path.join(proyectoDirname, 'documents', ruc, fileToZip+'.zip');
     try {
-        if (fs.existsSync(zip)) {
-            fs.unlinkSync(zip);
-        }
+        await fs.access(zip);
+        await fs.unlink(zip);
     } catch (error) {
         console.error(`Error al eliminar archivos: ${error}`);
     }

@@ -188,14 +188,14 @@ export class SaleService {
 
     const nombre_archivo = `${_company.ruc}-${_voucher.tipo_documento_codigo}-${_voucher.serie}-${_voucher.numero}`;
 
-    create_invoice(nombre_archivo, _company, _customer, _voucher, detalle);
+    await create_invoice(nombre_archivo, _company, _customer, _voucher, detalle);
 
     const doc = _voucher.tipo_documento_codigo == '03' ? 'BOLETAS' : 'FACTURAS'
     const route_xml = `${doc}/XML/${nombre_archivo}.xml`
     const route_firmados = `${doc}/FIRMADOS/${nombre_archivo}.xml`
     const route_zip = `${doc}/FIRMADOS/${nombre_archivo}`
 
-    await firmarXML(route_xml, route_firmados, filename_certificate, password_certificate);
+    await firmarXML(_company.ruc, route_xml, route_firmados, filename_certificate, password_certificate);
     const res = await enviarSunat(_company, route_zip, nombre_archivo);
     if (!res.status) {
       return {
@@ -204,7 +204,7 @@ export class SaleService {
         response_sunat_description: res.error
       }
     }
-    const route_cdr = `${doc}/CDR`
+    const route_cdr = `${_company.ruc}/${doc}/CDR`
     await base64ToZip(res.result_base64_string[0].applicationResponse, route_cdr, nombre_archivo)
     const res_cdr = await leerCdrXml(route_cdr, nombre_archivo)
     return res_cdr

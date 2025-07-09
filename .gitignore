@@ -77,3 +77,4 @@ sales/media/facturador/FACTURAS/XML/*.zip
 sales/media/facturador/NOTA_CREDITO/CDR/*.zip
 sales/media/facturador/NOTA_CREDITO/FIRMADOS/*.zip
 sales/media/facturador/NOTA_CREDITO/XML/*.zip
+documents/*

@@ -1,19 +1,21 @@
-import * as fs from "fs";
+import { promises as fs } from 'fs';
 import * as path from "path";
 import { parseStringPromise } from 'xml2js';
 
 export async function leerCdrXml(route_cdr: string, filename: string): Promise<{ status: boolean; response_sunat_code?: string; response_sunat_description?: string; error?: string }> {
-    const proyectoDirname = path.resolve(__dirname, '..', '..', '..', '..');
-    const xmlFilePath = path.join(proyectoDirname, 'media', 'facturador', route_cdr,'R-'+filename + '.xml');
-    
+    const _root = path.resolve(__dirname, '..', '..', '..', '..', '..');
 
-    if (!fs.existsSync(xmlFilePath)) {
+    const xmlFilePath = path.join(_root, 'documents', route_cdr, 'R-' + filename + '.xml');
+
+    try {
+        await fs.access(xmlFilePath);
+    } catch {
         return { status: false, error: `El archivo ${xmlFilePath} no existe.` };
     }
 
     try {
-        const xmlContent = fs.readFileSync(xmlFilePath, 'utf-8');
-        
+        const xmlContent = await fs.readFile(xmlFilePath, 'utf-8');
+
         const parsedXml = await parseStringPromise(xmlContent, { explicitArray: false });
 
         const responseCode = parsedXml?.['ar:ApplicationResponse']?.['cac:DocumentResponse']?.['cac:Response']?.['cbc:ResponseCode'];
