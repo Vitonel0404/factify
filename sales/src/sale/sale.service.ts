@@ -106,15 +106,15 @@ export class SaleService {
 
     response.status = savedSale ? true : false;
     response.message_sunat = 'Venta registrada correctamente';
-    
+
     if (createSaleDto.series.includes('B') || createSaleDto.series.includes('F')) {
       const res_sunat: any = await this.sentToSunat(_sale, detail, '10167846292.pfx', 'contrasena', tenancy);
       if (res_sunat.status) {
-        // await this.mark_sent_sunat(order.id_order);
+        await this.mark_sent_sunat(_sale.id_sale);
       }
-      response.message_sunat = 'Venta registrada correctamente. '+res_sunat.response_sunat_description;
+      response.message_sunat = 'Venta registrada correctamente. ' + res_sunat.response_sunat_description;
     }
-    
+
     return response;
   }
 
@@ -268,6 +268,21 @@ export class SaleService {
     } catch (error) {
       console.error('Error en getVoucherNumerExternal:', error?.response?.data || error.message);
       throw new InternalServerErrorException('Error al enviar datos al servicio externo de otención de correlativos');
+    }
+  }
+
+  async mark_sent_sunat(id_sale: number) {
+    try {
+       const result = await this.saleRepository.update(
+        { id_sale },
+        { send_sunat: true }
+      );
+      if (result.affected === 0) return false;
+      
+      return true
+
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
     }
   }
 
