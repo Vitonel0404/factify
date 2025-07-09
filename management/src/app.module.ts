@@ -9,6 +9,7 @@ import { VoucherTypeModule } from './voucher_type/voucher_type.module';
 import { PaymentMethodModule } from './payment-method/payment-method.module';
 import { SupplierModule } from './supplier/supplier.module';
 import { CorrelativeModule } from './correlative/correlative.module';
+import { CertificateModule } from './certificate/certificate.module';
 
 @Module({
   imports: [
@@ -22,7 +23,8 @@ import { CorrelativeModule } from './correlative/correlative.module';
     VoucherTypeModule,
     PaymentMethodModule,
     SupplierModule,
-    CorrelativeModule],
+    CorrelativeModule,
+    CertificateModule],
   controllers: [AppController],
   providers: [AppService],
 })
