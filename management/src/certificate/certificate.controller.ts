@@ -4,7 +4,8 @@ import { CreateCertificateDto } from './dto/create-certificate.dto';
 import { CompanyGuard } from 'src/middleware/company.guard';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-
+import * as fs from 'fs';
+import * as path from "path";
 
 @Controller('certificate')
 export class CertificateController {
@@ -16,7 +17,22 @@ export class CertificateController {
     FilesInterceptor('certificate'
       , 1, {
       storage: diskStorage({
-        destination: './media/certificate',
+        destination: (req: any, file: any, cb: any) => {
+
+        const ruc = req.body.ruc;
+        
+        if (!ruc) {
+          return cb(new Error('El RUC es obligatorio'), '');
+        }
+
+        const basePath: string = process.env.CERTIFICATES_ROOT || '';
+
+        const destPath = path.join(basePath, ruc);
+
+        fs.mkdirSync(destPath, { recursive: true });
+
+        cb(null, destPath);
+      },
         filename: (req: any, file: any, cb: any) => {
           cb(null, `${file.originalname}`);
         },

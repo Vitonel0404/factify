@@ -46,8 +46,8 @@
             <cac:PartyLegalEntity>
                 <cbc:RegistrationName>{{empresa.legal_name}}</cbc:RegistrationName>
                 <cac:RegistrationAddress>
-                    <cbc:ID schemeName="Ubigeos" schemeAgencyName="PE:INEI">{{empresa.ubigeo}}</cbc:ID>
-                    <cbc:AddressTypeCode listAgencyName="PE:SUNAT" listName="Establecimientos anexos">0000</cbc:AddressTypeCode>
+                    <cbc:ID schemeName="Ubigeos" schemeAgencyName="PE:INEI">{{empresa.geo_code}}</cbc:ID>
+                    <cbc:AddressTypeCode listAgencyName="PE:SUNAT" listName="Establecimientos anexos">{{empresa.annex_code}}</cbc:AddressTypeCode>
                     <cbc:CityName>{{empresa.province}}</cbc:CityName>
                     <cbc:CountrySubentity>{{empresa.department}}</cbc:CountrySubentity>
                     <cbc:District>{{empresa.district}}</cbc:District>

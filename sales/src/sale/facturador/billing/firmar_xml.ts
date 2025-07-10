@@ -5,9 +5,11 @@ import * as forge from 'node-forge';
 
 export async function firmarXML(ruc: string, filename: string, firmado: string, certificate_filename: string, password: string) {
 
-  const _root = path.resolve(__dirname, '..', '..', '..', '..', '..');
+  const _root = process.env.DOCUMENTS_ROOT || path.resolve(__dirname, '..', '..', '..', '..', '..');
 
-  const routeCertificado = path.join(_root, 'sales', 'media', 'certificate', certificate_filename);
+  const CERTIFICATES_ROOT = process.env.CERTIFICATES_ROOT || ''
+
+  const routeCertificado =  path.join(CERTIFICATES_ROOT, ruc, certificate_filename);
 
   const routeXML = path.join(_root, 'documents', ruc, filename);
 

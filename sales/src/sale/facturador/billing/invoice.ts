@@ -6,7 +6,7 @@ import * as Handlebars from "handlebars";
 
 export async function create_invoice(routeFile: any, empresa: any, cliente: any, venta: any, detalle: any) {
     const xml = await desarrollo_xml(empresa, cliente, venta, detalle);
-    const _root = path.resolve(__dirname, '..', '..', '..', '..', '..');
+    const _root = process.env.DOCUMENTS_ROOT || path.resolve(__dirname, '..', '..', '..', '..', '..');
     const doc = venta.tipo_documento_codigo == '03' ? 'BOLETAS' : 'FACTURAS'
     const route = path.join(_root, 'documents',empresa.ruc, doc, 'XML');
     await ensureDirectoryExists(route);

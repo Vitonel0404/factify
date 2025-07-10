@@ -3,7 +3,7 @@ import * as path from "path";
 import { parseStringPromise } from 'xml2js';
 
 export async function leerCdrXml(route_cdr: string, filename: string): Promise<{ status: boolean; response_sunat_code?: string; response_sunat_description?: string; error?: string }> {
-    const _root = path.resolve(__dirname, '..', '..', '..', '..', '..');
+    const _root = process.env.DOCUMENTS_ROOT || path.resolve(__dirname, '..', '..', '..', '..', '..');
 
     const xmlFilePath = path.join(_root, 'documents', route_cdr, 'R-' + filename + '.xml');
 

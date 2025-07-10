@@ -4,7 +4,7 @@ import * as unzipper from 'unzipper';
 
 export async function base64ToZip(base64String: string, route_cdr: string, filename: string): Promise<{ status: boolean; message?: string; error?: string }> {
   try {
-    const _root = path.resolve(__dirname, '..', '..', '..', '..', '..');
+    const _root = process.env.DOCUMENTS_ROOT || path.resolve(__dirname, '..', '..', '..', '..', '..');
     const filePath = path.join(_root, 'documents', route_cdr, filename + ".zip");
     const _paht_cdr = path.join(filePath, '..')
     await ensureDirectoryExists(_paht_cdr);
@@ -22,7 +22,7 @@ export async function base64ToZip(base64String: string, route_cdr: string, filen
 }
 
 export async function descomprimirCDR(route_cdr: string, filename: string): Promise<void> {
-  const _root = path.resolve(__dirname, '..', '..', '..', '..', '..');
+  const _root = process.env.DOCUMENTS_ROOT || path.resolve(__dirname, '..', '..', '..', '..', '..');
   const zipfile = path.join(_root, "documents", route_cdr, `${filename}.zip`);
   const unzipFolder = path.join(_root, "documents", route_cdr);
   return new Promise<void>((resolve, reject) => {
@@ -46,7 +46,7 @@ export async function descomprimirCDR(route_cdr: string, filename: string): Prom
 }
 
 export async function eliminarCDRComprimido(route_cdr: string, filename: string): Promise<void> {
-  const _root = path.resolve(__dirname, '..', '..', '..', '..', '..');
+  const _root = process.env.DOCUMENTS_ROOT || path.resolve(__dirname, '..', '..', '..', '..', '..');
   const zipfile = path.join(_root, "documents", route_cdr, `${filename}.zip`);
 
   try {

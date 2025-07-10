@@ -5,7 +5,7 @@ import * as soap from 'soap';
 
 export async function enviarSunat(empresa : any, path_filename : string, filename : string) {
 
-    const _root = path.resolve(__dirname, '..', '..', '..', '..', '..');
+    const _root = process.env.DOCUMENTS_ROOT || path.resolve(__dirname, '..', '..', '..', '..', '..');
     const fileToZip = path.join(_root, 'documents', empresa.ruc, path_filename+'.xml');
     if (!fs.access(fileToZip)) {
         return { status: false, error: 'El archivo XML no existe en la ruta especificada.' };
@@ -43,7 +43,7 @@ export async function enviarSunat(empresa : any, path_filename : string, filenam
 }
 
 async function eliminarFirmaComprimido(ruc: string, fileToZip: string): Promise<void> {
-    const proyectoDirname = path.resolve(__dirname, '..', '..', '..', '..', '..');
+    const proyectoDirname = process.env.DOCUMENTS_ROOT || path.resolve(__dirname, '..', '..', '..', '..', '..');
     const zip = path.join(proyectoDirname, 'documents', ruc, fileToZip+'.zip');
     try {
         await fs.access(zip);
