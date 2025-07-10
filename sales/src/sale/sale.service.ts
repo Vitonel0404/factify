@@ -439,4 +439,34 @@ export class SaleService {
     }
   }
 
+  async documentForwarding(id_sale : number, company: any, tenancy: string){
+    const response: any = {};
+    let certificate_data: any[];
+
+    // certificate_data = await this.getDataCertificate();
+    // if (certificate_data.length == 0) {
+    //   return {
+    //     status: false,
+    //     response_sunat_code: '0',
+    //     response_sunat_description: 'No se encuentra un certificado digital para emitir boletas o facturas. Cargue un certificado el sección de facturación'
+    //   }
+    // }
+
+    const _sale : any = await this.saleRepository.findOne({where:{id_sale}})
+    const detail : any = await this.saleDetailService.findAll(id_sale);
+    _sale.company = company;
+    const res_sunat: any = await this.sentToSunat(_sale, detail, '10167846292.pfx', 'contrasena', tenancy);
+    if (res_sunat.status) {
+      await this.mark_sent_sunat(_sale.id_sale);
+      response.status =  true;
+      response.message_sunat = res_sunat.response_sunat_description;
+    }else{
+      response.status =  false;
+      response.message_sunat = 'Error al reenviar documento a SUNAT';  
+    }
+    
+    return response
+  }
+
+
 }

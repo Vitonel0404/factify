@@ -42,4 +42,13 @@ export class SaleController {
     : req.headers['x-tenant-id'] || '';
     return this.saleService.remove(+id, data, tenancy);
   }
+
+  @UseGuards(CompanyGuard)
+  @Post('forwarding/:id_sale')
+  documentForwarding(@Req() req: Request, @Param('id_sale') id_sale: string, @Body() data: any) {
+    const tenancy = Array.isArray(req.headers['x-tenant-id'])
+    ? req.headers['x-tenant-id'][0]
+    : req.headers['x-tenant-id'] || '';
+    return this.saleService.documentForwarding(+id_sale,data,tenancy);
+  }
 }
