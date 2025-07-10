@@ -13,7 +13,7 @@ export class ProxyService {
     const hasBody = !!req.body;
 
     const headers = this.prepareHeaders(req.headers, baseUrl, hasBody);
-    
+    const isMultipart = req.headers['content-type']?.startsWith('multipart/form-data');
 
     // console.log(`[Proxy] Forwarding ${method.toUpperCase()} ${req.originalUrl} -> ${url}`);
     // console.log('[Proxy] Headers:', headers);
@@ -24,7 +24,7 @@ export class ProxyService {
         url,
         method,
         headers,
-        data: req.body,
+        data: isMultipart ? req : req.body,
         timeout: 60000,
         maxRedirects: 0
       });

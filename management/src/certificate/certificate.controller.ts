@@ -1,21 +1,41 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterceptors, UploadedFiles } from '@nestjs/common';
 import { CertificateService } from './certificate.service';
 import { CreateCertificateDto } from './dto/create-certificate.dto';
+import { CompanyGuard } from 'src/middleware/company.guard';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+
 
 @Controller('certificate')
 export class CertificateController {
   constructor(private readonly certificateService: CertificateService) {}
 
+  @UseGuards(CompanyGuard)
   @Post()
-  create(@Body() createCertificateDto: CreateCertificateDto) {
-    return this.certificateService.create(createCertificateDto);
+  @UseInterceptors(
+    FilesInterceptor('certificate'
+      , 1, {
+      storage: diskStorage({
+        destination: './media/certificate',
+        filename: (req: any, file: any, cb: any) => {
+          cb(null, `${file.originalname}`);
+        },
+      }),
+    }
+  ),
+  )
+  create(@Body() data: any, @UploadedFiles() files: Express.Multer.File[]) {
+    const certificate_url = files && files.length > 0  ? `/certificated/${files[0].filename}` : null;
+    return this.certificateService.create(data, certificate_url);
   }
 
+  @UseGuards(CompanyGuard)
   @Get()
   findAll() {
     return this.certificateService.findAll();
   }
 
+  @UseGuards(CompanyGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.certificateService.findOne(+id);
