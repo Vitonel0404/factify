@@ -14,6 +14,9 @@ export class SaleDetail {
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   price: number;
 
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
+  purchase_price: number;
+
   @Column({ type: 'int'})
   quantity: number;
 

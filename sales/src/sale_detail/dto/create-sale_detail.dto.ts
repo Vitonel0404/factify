@@ -18,6 +18,10 @@ export class CreateSaleDetailDto {
 
   @IsNumber()
   @IsPositive()
+  purchase_price: number;
+
+  @IsNumber()
+  @IsPositive()
   quantity: number;
 
   @IsNumber()

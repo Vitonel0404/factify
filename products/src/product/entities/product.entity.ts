@@ -21,6 +21,9 @@ export class Product {
   price: number;
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })
+  purchase_price: number;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
   stock: number;
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })

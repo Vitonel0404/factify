@@ -18,6 +18,10 @@ export class CreateProductDto {
     price: number;
 
     @IsNumber()
+    @IsPositive()
+    purchase_price: number;
+
+    @IsNumber()
     stock: number;
 
     @IsNumber()
