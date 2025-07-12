@@ -37,6 +37,7 @@ export class ProductService {
         'ms.description AS measure',
         'product.description AS description',
         'product.price AS price',
+        'product.purchase_price AS purchase_price',
         'product.stock AS stock',
         'product.minimum_stock AS minimum_stock',
         'product.is_active AS is_active'
