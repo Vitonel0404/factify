@@ -468,5 +468,31 @@ export class SaleService {
     return response
   }
 
+  async createCreditNote(credit_note_type: string, 
+    reason_cancellation: string, ){
+
+
+    // const _voucher: any = {
+    //   reference_series: cred.rows[0].series,
+    //   reference_number: voucher.rows[0].number,
+    //   credit_note_type: credit_note_type,
+    //   credit_note_description: reason_cancellation,
+    //   fecha_emision: "2023-01-26",
+    //   hora_emision: "10:02:49",
+    //   fecha_vencimiento: null,
+    //   moneda_id: "2",
+    //   forma_pago_id: "1",
+    //   total_gravada: "1",
+    //   total_igv: "90",
+    //   igv_value: params.rows[0].value_param,
+    //   total_exonerada: "",
+    //   total_inafecta: "",
+    //   tipo_documento_codigo: voucher.rows[0].cod_sunat,
+    //   codigo_nota_credito: '07',
+    //   nota: ""
+    // };
+  }
+  
+
 
 }

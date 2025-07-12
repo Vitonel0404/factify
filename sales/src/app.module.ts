@@ -8,6 +8,8 @@ import { SaleDetailModule } from './sale_detail/sale_detail.module';
 import { PaymentSaleModule } from './payment_sale/payment_sale.module';
 import { QuotationModule } from './quotation/quotation.module';
 import { QuotationDetailModule } from './quotation_detail/quotation_detail.module';
+import { CreditNoteModule } from './credit_note/credit_note.module';
+import { CreditNoteDetailModule } from './credit_note_detail/credit_note_detail.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -19,7 +21,9 @@ import { QuotationDetailModule } from './quotation_detail/quotation_detail.modul
     SaleDetailModule,
     PaymentSaleModule,
     QuotationModule,
-    QuotationDetailModule,],
+    QuotationDetailModule,
+    CreditNoteModule,
+    CreditNoteDetailModule,],
   controllers: [AppController],
   providers: [AppService],
 })
